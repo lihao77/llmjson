@@ -27,7 +27,7 @@ pip install llm-json-generator
 或从源码安装：
 
 ```bash
-git clone https://github.com/your-username/llm-json-generator.git
+git clone https://github.com/lihao77/llm-json-generator.git
 cd llm-json-generator
 pip install -e .
 ```
@@ -247,7 +247,7 @@ print(f"成功率: {stats['success_rate']:.1%}")
 
 ```bash
 # 克隆仓库
-git clone https://github.com/your-username/llm-json-generator.git
+git clone https://github.com/lihao77/llm-json-generator.git
 cd llm-json-generator
 
 # 创建虚拟环境
@@ -314,10 +314,10 @@ llm-json-generator/
 
 ## 🆘 支持与反馈
 
-- **问题报告**: [GitHub Issues](https://github.com/your-username/llm-json-generator/issues)
-- **功能请求**: [GitHub Discussions](https://github.com/your-username/llm-json-generator/discussions)
-- **文档**: [项目Wiki](https://github.com/your-username/llm-json-generator/wiki)
-- **邮箱**: your.email@example.com
+- **问题报告**: [GitHub Issues](https://github.com/lihao77/llm-json-generator/issues)
+- **功能请求**: [GitHub Discussions](https://github.com/lihao77/llm-json-generator/discussions)
+- **文档**: [项目Wiki](https://github.com/lihao77/llm-json-generator/wiki)
+- **邮箱**: qingyuepei@foxmail.com
 
 ## 🙏 致谢
 

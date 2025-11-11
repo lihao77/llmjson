@@ -18,16 +18,16 @@ with open("requirements.txt", "r", encoding="utf-8") as fh:
 setup(
     name="llm-json-generator",
     version="1.0.0",
-    author="Your Name",
-    author_email="your.email@example.com",
+    author="lihao77",
+    author_email="qingyuepei@foxmail.com",
     description="一个用于大语言模型生成JSON数据的Python包",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/your-username/llm-json-generator",
+    url="https://github.com/lihao77/llm-json-generator",
     project_urls={
-        "Bug Reports": "https://github.com/your-username/llm-json-generator/issues",
-        "Source": "https://github.com/your-username/llm-json-generator",
-        "Documentation": "https://github.com/your-username/llm-json-generator/wiki",
+        "Bug Reports": "https://github.com/lihao77/llm-json-generator/issues",
+        "Source": "https://github.com/lihao77/llm-json-generator",
+        "Documentation": "https://github.com/lihao77/llm-json-generator/wiki",
     },
     packages=find_packages(),
     classifiers=[
