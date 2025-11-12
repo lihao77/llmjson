@@ -38,34 +38,35 @@ pip install -e .
 
 **创建配置文件：**
 ```bash
-llm-json-generator create-config --output config.json
+llmgen create-config --output config.json
 ```
 
 **处理文本文件：**
 ```bash
 # 处理纯文本文件
-llm-json-generator process-text input.txt --config config.json --output results/
+llmgen process document.txt --config config.json --output results/
 
 # 处理Word文档
-llm-json-generator process-text document.docx --config config.json --streaming
+llmgen process document.docx --config config.json --streaming
 
-# 处理模式由配置文件控制（enable_parallel和max_workers参数）
-llm-json-generator process-text input.txt --chunk-size 3000
+# 使用自定义分块大小
+llmgen process input.txt --chunk-size 3000
 ```
 
 **数据验证：**
 ```bash
-llm-json-generator validate data.json --schema schema.json --output validation_report.json
+llmgen validate data.json --schema schema.json --output validation_report.json
 ```
 
 #### 2. Python API
 
 ```python
 from llm_json_generator import (
-    LLMProcessor, 
-    ConfigManager, 
+    LLMProcessor,
+    ConfigManager,
     DataValidator,
-    WordChunker
+    WordChunker,
+    PromptTemplate
 )
 
 # 创建配置
@@ -166,7 +167,7 @@ for result, info in results:
         print(f"处理失败: {info['error']}")
 
 # 流式处理（适合大量文档）
-for result, info in processor.batch_process(documents):
+for result, info in processor.stream_process(documents):
     if info['success']:
         # 实时处理每个结果
         save_result(result)
@@ -181,7 +182,7 @@ from llm_json_generator import DataValidator
 validator = DataValidator()
 
 # 验证JSON数据
-data = {"entities": [...], "relationships": [...]}
+data = {"entities": [], "relationships": []}
 summary, full_report = validator.validate_data(data)
 
 print(f"验证摘要: {summary}")
@@ -231,7 +232,7 @@ print(f"成功率: {stats['success_rate']:.1%}")
 - **Python**: 3.9+
 - **操作系统**: Windows, macOS, Linux
 - **内存**: 建议4GB+
-- **网络**: 需要访问OpenAI API
+- **网络**: 需要访问OpenAI API或其他LLM服务
 
 ## 📦 依赖包
 
@@ -240,6 +241,8 @@ print(f"成功率: {stats['success_rate']:.1%}")
 - `python-docx>=1.1.0` - Word文档处理
 - `tiktoken>=0.7.0` - Token计算
 - `requests>=2.31.0` - HTTP请求
+- `click>=8.0.0` - 命令行接口
+- `pydantic>=2.0.0` - 数据验证
 
 ## 🛠️ 开发指南
 
@@ -277,17 +280,20 @@ llm-json-generator/
 │   ├── validator.py            # 数据验证器
 │   ├── prompt_template.py      # 提示模板
 │   ├── word_chunker.py         # Word文档分块
+│   ├── run_mode.py             # 文档处理运行模式
 │   ├── utils.py                # 工具函数
-│   └── exceptions.py           # 异常定义
-├── tests/                      # 测试文件
-├── docs/                       # 文档
-├── examples/                   # 示例代码
+│   ├── exceptions.py           # 异常定义
+│   └── log/                    # 日志系统
+│       ├── __init__.py
+│       ├── config.py
+│       ├── context.py
+│       ├── manager.py
+│       └── setup.py
 ├── setup.py                    # 安装配置
 ├── requirements.txt            # 依赖列表
+├── pyproject.toml              # 项目配置
 ├── README.md                   # 项目说明
 └── LICENSE                     # 许可证
-
-
 ```
 
 ## 🤝 贡献指南
