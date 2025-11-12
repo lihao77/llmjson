@@ -158,3 +158,9 @@ test_outputs/
 test_results/
 *.tmp
 *.temp
+
+# Generated Markdown files
+FUTURE_DEVELOPMENT.md
+GITHUB_CONFIGURATION.md
+PROJECT_CHECKLIST.md
+GITHUB_SETUP.md

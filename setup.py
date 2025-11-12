@@ -19,7 +19,7 @@ setup(
     name="llm-json-generator",
     version="1.0.0",
     author="lihao77",
-    author_email="qingyuepei@foxmail.com",
+    author_email="anonymous",
     description="一个用于大语言模型生成JSON数据的Python包",
     long_description=long_description,
     long_description_content_type="text/markdown",

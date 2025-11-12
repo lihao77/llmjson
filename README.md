@@ -317,7 +317,7 @@ llm-json-generator/
 - **问题报告**: [GitHub Issues](https://github.com/lihao77/llm-json-generator/issues)
 - **功能请求**: [GitHub Discussions](https://github.com/lihao77/llm-json-generator/discussions)
 - **文档**: [项目Wiki](https://github.com/lihao77/llm-json-generator/wiki)
-- **邮箱**: qingyuepei@foxmail.com
+- **邮箱**: anonymous
 
 ## 🙏 致谢
 
