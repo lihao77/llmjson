@@ -53,7 +53,7 @@ class SingletonLogger:
             return self.logger
         
         self.config = config
-        self.logger = logging.getLogger('llm_json_generator')
+        self.logger = logging.getLogger('llmjson')
         self.logger.setLevel(getattr(logging, config.log_level.upper()))
         
         # 清除现有处理器
@@ -63,7 +63,7 @@ class SingletonLogger:
         if log_file is None:
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
             os.makedirs(config.log_dir, exist_ok=True)
-            self.log_file_path = os.path.join(config.log_dir, f"llm_json_generator_{timestamp}.log")
+            self.log_file_path = os.path.join(config.log_dir, f"llmjson_{timestamp}.log")
         else:
             self.log_file_path = log_file
         
@@ -211,7 +211,7 @@ class LogManager:
         self.config = config
         self.logger = None
     
-    def setup_logging(self, logger_name: str = 'llm_json_generator') -> logging.Logger:
+    def setup_logging(self, logger_name: str = 'llmjson') -> logging.Logger:
         """设置日志系统"""
         self.logger = logging.getLogger(logger_name)
         self.logger.setLevel(getattr(logging, self.config.log_level.upper()))
@@ -242,7 +242,7 @@ class LogManager:
         """添加文件处理器"""
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         os.makedirs(self.config.log_dir, exist_ok=True)
-        log_file_path = os.path.join(self.config.log_dir, f"llm_json_generator_{timestamp}.log")
+        log_file_path = os.path.join(self.config.log_dir, f"llmjson_{timestamp}.log")
         
         # 确保日志目录存在
         os.makedirs(os.path.dirname(log_file_path), exist_ok=True)

@@ -1,6 +1,6 @@
-"""LLM JSON生成器包
+"""LLMJSON包
 
-一个用于大语言模型生成JSON数据的标准Python包。
+一个简洁高效的用于大语言模型生成JSON数据的Python包。
 """
 
 __version__ = "1.0.0"

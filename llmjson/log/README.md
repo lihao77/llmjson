@@ -32,7 +32,7 @@ logging/
 ### 基本使用
 
 ```python
-from llm_json_generator.logging import setup_logging, get_logger
+from llmjson.log import setup_logging, get_logger
 
 # 设置日志系统
 logger = setup_logging(log_level="INFO")
@@ -50,7 +50,7 @@ logger.info("使用相同的日志器实例")
 ### 自定义配置
 
 ```python
-from llm_json_generator.logging import LogConfig, setup_logging
+from llmjson.log import LogConfig, setup_logging
 
 # 创建自定义配置
 config = LogConfig()
@@ -66,7 +66,7 @@ logger = setup_logging(config=config)
 ### 上下文日志
 
 ```python
-from llm_json_generator.logging import create_logger_with_context
+from llmjson.log import create_logger_with_context
 
 # 创建带上下文的日志器
 context = {
@@ -83,7 +83,7 @@ context_logger.error("处理过程中遇到错误")
 ### 计时日志
 
 ```python
-from llm_json_generator.logging import create_timed_logger
+from llmjson.log import create_timed_logger
 
 # 创建计时日志器
 timed_logger = create_timed_logger({'operation': 'data_processing'})
@@ -98,7 +98,7 @@ elapsed = timed_logger.end_timer("process_data")
 ### 结构化日志
 
 ```python
-from llm_json_generator.logging import create_structured_logger
+from llmjson.log import create_structured_logger
 
 # 创建结构化日志器
 structured_logger = create_structured_logger({'service': 'api'})
@@ -125,7 +125,7 @@ structured_logger.log_performance('api_call', 1.2, {
 ### 环境配置
 
 ```python
-from llm_json_generator.logging import setup_environment_logging
+from llmjson.log import setup_environment_logging
 
 # 为不同环境设置日志
 logger = setup_environment_logging("production")  # 或 "development", "testing"
@@ -134,7 +134,7 @@ logger = setup_environment_logging("production")  # 或 "development", "testing"
 ### 从配置文件加载
 
 ```python
-from llm_json_generator.logging import setup_from_config_file
+from llmjson.log import setup_from_config_file
 
 # 从JSON配置文件加载
 logger = setup_from_config_file("logging_config.json")
@@ -143,7 +143,7 @@ logger = setup_from_config_file("logging_config.json")
 ### 装饰器使用
 
 ```python
-from llm_json_generator.logging import log_function_call, log_execution_time
+from llmjson.log import log_function_call, log_execution_time
 
 @log_function_call()
 def my_function(x, y):

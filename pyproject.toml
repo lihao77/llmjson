@@ -3,7 +3,7 @@ requires = ["setuptools>=45", "wheel", "setuptools_scm[toml]>=6.2"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "llm-json-generator"
+name = "llmjson"
 version = "1.0.0"
 authors = [
     {name = "Knowledge Graph Team", email = "team@example.com"},
@@ -47,19 +47,20 @@ docs = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/your-org/llm-json-generator"
-"Bug Reports" = "https://github.com/your-org/llm-json-generator/issues"
-Source = "https://github.com/your-org/llm-json-generator"
-Documentation = "https://llm-json-generator.readthedocs.io/"
+Homepage = "https://github.com/lihao77/llmjson"
+"Bug Reports" = "https://github.com/lihao77/llmjson/issues"
+Source = "https://github.com/lihao77/llmjson"
+Documentation = "https://llmjson.readthedocs.io/"
 
 [project.scripts]
-llmgen = "llm_json_generator.cli:main"
+llmgen = "llmjson.cli:main"
+llmjson = "llmjson.cli:main"
 
 [tool.setuptools]
-packages = ["llm_json_generator"]
+packages = ["llmjson"]
 
 [tool.setuptools.package-data]
-llm_json_generator = ["*.md", "*.txt", "*.json"]
+llmjson = ["*.md", "*.txt", "*.json"]
 
 [tool.black]
 line-length = 88

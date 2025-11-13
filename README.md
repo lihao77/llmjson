@@ -21,14 +21,14 @@
 ### 安装
 
 ```bash
-pip install llm-json-generator
+pip install llmjson
 ```
 
 或从源码安装：
 
 ```bash
-git clone https://github.com/lihao77/llm-json-generator.git
-cd llm-json-generator
+git clone https://github.com/lihao77/llmjson.git
+cd llmjson
 pip install -e .
 ```
 
@@ -36,32 +36,38 @@ pip install -e .
 
 #### 1. 命令行工具（推荐）
 
+支持两个命令：`llmjson` 和 `llmgen`（简写形式）
+
 **创建配置文件：**
 ```bash
+llmjson create-config --output config.json
+# 或者使用简写
 llmgen create-config --output config.json
 ```
 
 **处理文本文件：**
 ```bash
 # 处理纯文本文件
-llmgen process document.txt --config config.json --output results/
+llmjson process document.txt --config config.json --output results/
 
 # 处理Word文档
-llmgen process document.docx --config config.json --streaming
+llmjson process document.docx --config config.json --streaming
 
 # 使用自定义分块大小
-llmgen process input.txt --chunk-size 3000
+llmjson process input.txt --chunk-size 3000
 ```
 
 **数据验证：**
 ```bash
+llmjson validate data.json --schema schema.json --output validation_report.json
+# 或者使用简写
 llmgen validate data.json --schema schema.json --output validation_report.json
 ```
 
 #### 2. Python API
 
 ```python
-from llm_json_generator import (
+from llmjson import (
     LLMProcessor,
     ConfigManager,
     DataValidator,
@@ -130,7 +136,7 @@ export ENABLE_PARALLEL="true"
 ### Word文档处理
 
 ```python
-from llm_json_generator import WordChunker
+from llmjson import WordChunker
 
 # 创建Word分块器
 chunker = WordChunker(
@@ -176,7 +182,7 @@ for result, info in processor.stream_process(documents):
 ### 数据验证
 
 ```python
-from llm_json_generator import DataValidator
+from llmjson import DataValidator
 
 # 创建验证器
 validator = DataValidator()
@@ -198,7 +204,7 @@ validator.export_validation_report("validation_report.json")
 ### 自定义提示模板
 
 ```python
-from llm_json_generator import PromptTemplate
+from llmjson import PromptTemplate
 
 # 创建自定义模板
 template = PromptTemplate(
@@ -213,7 +219,7 @@ processor = LLMProcessor(config, prompt_template=template)
 ### 性能监控
 
 ```python
-from llm_json_generator import Timer
+from llmjson import Timer
 
 # 使用计时器
 with Timer() as timer:
@@ -250,8 +256,8 @@ print(f"成功率: {stats['success_rate']:.1%}")
 
 ```bash
 # 克隆仓库
-git clone https://github.com/lihao77/llm-json-generator.git
-cd llm-json-generator
+git clone https://github.com/lihao77/llmjson.git
+cd llmjson
 
 # 创建虚拟环境
 python -m venv venv
@@ -264,15 +270,15 @@ pip install -e ".[dev]"
 pytest tests/
 
 # 代码格式化
-black llm_json_generator/
-flake8 llm_json_generator/
+black llmjson/
+flake8 llmjson/
 ```
 
 ### 项目结构
 
 ```
-llm-json-generator/
-├── llm_json_generator/          # 主包目录
+llmjson/
+├── llmjson/          # 主包目录
 │   ├── __init__.py             # 包初始化
 │   ├── cli.py                  # 命令行接口
 │   ├── config.py               # 配置管理
@@ -320,9 +326,9 @@ llm-json-generator/
 
 ## 🆘 支持与反馈
 
-- **问题报告**: [GitHub Issues](https://github.com/lihao77/llm-json-generator/issues)
-- **功能请求**: [GitHub Discussions](https://github.com/lihao77/llm-json-generator/discussions)
-- **文档**: [项目Wiki](https://github.com/lihao77/llm-json-generator/wiki)
+- **问题报告**: [GitHub Issues](https://github.com/lihao77/llmjson/issues)
+- **功能请求**: [GitHub Discussions](https://github.com/lihao77/llmjson/discussions)
+- **文档**: [项目Wiki](https://github.com/lihao77/llmjson/wiki)
 - **邮箱**: anonymous
 
 ## 🙏 致谢

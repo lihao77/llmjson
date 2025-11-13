@@ -49,7 +49,7 @@ def setup_logging(
     return logger
 
 
-def get_logger(name: str = 'llm_json_generator') -> logging.Logger:
+def get_logger(name: str = 'llmjson') -> logging.Logger:
     """获取日志器实例（推荐使用）
     
     Args:

@@ -97,7 +97,7 @@ def process_text_command(args):
         error_msg = f"配置文件不存在: {config_file}"
         logger.error(f"❌ {error_msg}")
         print(f"❌ {error_msg}")
-        print("💡 使用 'llm-json-generator create-config' 创建配置文件")
+        print("💡 使用 'llmjson create-config' 创建配置文件")
         return 1
     
     try:
@@ -194,7 +194,7 @@ def process_documents_command(args):
         error_msg = f"配置文件不存在: {config_file}"
         logger.error(f"❌ {error_msg}")
         print(f"❌ {error_msg}")
-        print("💡 使用 'llm-json-generator create-config' 创建配置文件")
+        print("💡 使用 'llmjson create-config' 创建配置文件")
         return 1
     
     # 获取文件夹路径
@@ -457,50 +457,50 @@ LLM JSON Generator - Generate knowledge graph JSON data using Large Language Mod
 
 📋 配置管理 | Configuration Management:
   # 创建配置文件 | Create configuration file
-  llm-json-generator create-config
-  llm-json-generator create-config -o my_config.json
+  llmjson create-config
+  llmjson create-config -o my_config.json
 
 📄 单文档处理 | Single Document Processing:
   # 基础处理 | Basic processing
-  llm-json-generator process document.txt
-  llm-json-generator process document.docx
+  llmjson process document.txt
+  llmjson process document.docx
 
   # 自定义输出目录 | Custom output directory
-  llm-json-generator process document.txt -o results/
+  llmjson process document.txt -o results/
 
   # 使用自定义配置 | Use custom configuration
-  llm-json-generator process document.txt -c my_config.json
+  llmjson process document.txt -c my_config.json
 
   # 包含表格和验证 | Include tables and validation
-  llm-json-generator process document.txt --tables --validation
+  llmjson process document.txt --tables --validation
 
   # 启用详细日志 | Enable detailed logging
-  llm-json-generator process document.txt -l
+  llmjson process document.txt -l
 
 📁 批量文档处理 | Batch Document Processing:
   # 传统批量处理 | Traditional batch processing
-  llm-json-generator process-documents /path/to/docs/ -m batch -o results/
+  llmjson process-documents /path/to/docs/ -m batch -o results/
 
   # 优化流式处理(推荐) | Optimized streaming processing (recommended)
-  llm-json-generator process-documents /path/to/docs/ -m optimized -o results/
+  llmjson process-documents /path/to/docs/ -m optimized -o results/
 
   # 完整参数示例 | Full parameter example
-  llm-json-generator process-documents /path/to/docs/ \\
+  llmjson process-documents /path/to/docs/ \\
     -m optimized -o batch_results/ -c my_config.json --tables --validation -l
 
 🔍 数据验证 | Data Validation:
   # 基础验证 | Basic validation
-  llm-json-generator validate data.json
+  llmjson validate data.json
 
   # 保存验证后的数据和报告 | Save validated data and report
-  llm-json-generator validate data.json -o validated_data.json -r validation_report.json
+  llmjson validate data.json -o validated_data.json -r validation_report.json
 
 💡 高级用法 | Advanced Usage:
   # 使用自定义提示模板 | Use custom prompt template
-  llm-json-generator process document.txt -t custom_template.json
+  llmjson process document.txt -t custom_template.json
 
   # 处理包含大量表格的文档 | Process documents with many tables
-  llm-json-generator process-document folder/ --tables --validation -l
+  llmjson process-document folder/ --tables --validation -l
 
 🎯 输出说明 | Output Description:
   • results/ - 处理结果目录 | Processing results directory
@@ -532,8 +532,8 @@ LLM JSON Generator - Generate knowledge graph JSON data using Large Language Mod
 This command creates a configuration file with default settings, including LLM and processing configurations.
 
 示例 | Example:
-  llm-json-generator create-config
-  llm-json-generator create-config -o /path/to/my_config.json
+  llmjson create-config
+  llmjson create-config -o /path/to/my_config.json
 """
     config_parser = subparsers.add_parser('create-config',
                                          help='创建示例配置文件 | Create example configuration file',
@@ -562,19 +562,19 @@ Process a single document (.txt or .docx) to extract entities and relationships 
 
 示例 | Examples:
   # 基础处理 | Basic processing
-  llm-json-generator process document.txt
+  llmjson process document.txt
 
   # 自定义输出目录 | Custom output directory
-  llm-json-generator process document.docx -o results/
+  llmjson process document.docx -o results/
 
   # 使用自定义配置 | Use custom configuration
-  llm-json-generator process document.txt -c my_config.json
+  llmjson process document.txt -c my_config.json
 
   # 包含表格和启用验证 | Include tables and enable validation
-  llm-json-generator process document.txt --tables --validation
+  llmjson process document.txt --tables --validation
 
   # 启用详细日志 | Enable detailed logging
-  llm-json-generator process document.txt -l
+  llmjson process document.txt -l
 """
     process_parser = subparsers.add_parser('process',
                                          help='处理单个文本文件 | Process a single text document',
@@ -621,13 +621,13 @@ results/
 
 示例 | Examples:
   # 传统批量处理 | Traditional batch processing
-  llm-json-generator process-documents /path/to/docs/ -m batch -o results/
+  llmjson process-documents /path/to/docs/ -m batch -o results/
 
   # 优化流式处理 | Optimized streaming processing
-  llm-json-generator process-documents /path/to/docs/ -m optimized -o results/
+  llmjson process-documents /path/to/docs/ -m optimized -o results/
 
   # 完整参数 | Full parameters
-  llm-json-generator process-documents /path/to/docs/ \\
+  llmjson process-documents /path/to/docs/ \\
     -m optimized -o batch_results/ -c my_config.json --tables --validation -l
 """
     docs_parser = subparsers.add_parser('process-documents',
@@ -675,16 +675,16 @@ Validate, repair, and clean JSON data with detailed validation reports.
 
 示例 | Examples:
   # 基础验证 | Basic validation
-  llm-json-generator validate data.json
+  llmjson validate data.json
 
   # 保存验证后的数据 | Save validated data
-  llm-json-generator validate data.json -o clean_data.json
+  llmjson validate data.json -o clean_data.json
 
   # 生成验证报告 | Generate validation report
-  llm-json-generator validate data.json -r report.json
+  llmjson validate data.json -r report.json
 
   # 保存数据和报告 | Save both data and report
-  llm-json-generator validate data.json -o clean_data.json -r report.json
+  llmjson validate data.json -o clean_data.json -r report.json
 """
     validate_parser = subparsers.add_parser('validate',
                                           help='验证JSON数据 | Validate JSON data',

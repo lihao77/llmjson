@@ -20,7 +20,7 @@ parent_dir = os.path.dirname(current_dir)
 sys.path.insert(0, parent_dir)
 
 try:
-    from llm_json_generator.log import (
+    from llmjson.log import (
         LogConfig,
         SingletonLogger,
         setup_logging,

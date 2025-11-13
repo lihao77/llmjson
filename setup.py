@@ -16,18 +16,18 @@ with open("requirements.txt", "r", encoding="utf-8") as fh:
     requirements = [line.strip() for line in fh if line.strip() and not line.startswith("#")]
 
 setup(
-    name="llm-json-generator",
+    name="llmjson",
     version="1.0.0",
     author="lihao77",
     author_email="anonymous",
     description="一个用于大语言模型生成JSON数据的Python包",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/lihao77/llm-json-generator",
+    url="https://github.com/lihao77/llmjson",
     project_urls={
-        "Bug Reports": "https://github.com/lihao77/llm-json-generator/issues",
-        "Source": "https://github.com/lihao77/llm-json-generator",
-        "Documentation": "https://github.com/lihao77/llm-json-generator/wiki",
+        "Bug Reports": "https://github.com/lihao77/llmjson/issues",
+        "Source": "https://github.com/lihao77/llmjson",
+        "Documentation": "https://github.com/lihao77/llmjson/wiki",
     },
     packages=find_packages(),
     classifiers=[
@@ -61,7 +61,8 @@ setup(
     },
     entry_points={
         "console_scripts": [
-            "llmgen=llm_json_generator.cli:main",
+            "llmgen=llmjson.cli:main",
+            "llmjson=llmjson.cli:main",
         ],
     },
     include_package_data=True,
