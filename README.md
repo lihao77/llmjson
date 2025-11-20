@@ -2,29 +2,31 @@
 
 [![Python Version](https://img.shields.io/badge/python-3.9%2B-blue.svg)](https://python.org)[![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)[![PyPI Version](https://img.shields.io/badge/pypi-1.0.0-orange.svg)](#)
 
-一个功能强大的Python包，专为使用大语言模型（LLM）生成结构化JSON数据而设计。支持文本分块、批量处理、流式处理、Word文档解析和数据验证等功能。
+[中文文档](README_zh.md) | English
 
-## ✨ 核心特性
+A powerful Python package designed for generating structured JSON data using Large Language Models (LLMs). Supports text chunking, batch processing, streaming, Word document parsing, and data validation.
 
-- 🤖 **多LLM支持**: 支持OpenAI GPT系列等主流大语言模型
-- 📄 **文档处理**: 支持纯文本和Word文档(.docx)处理
-- ⚡ **高效处理**: 提供批量处理、流式处理和并行处理模式
-- 🔧 **灵活配置**: 支持配置文件和环境变量配置
-- ✅ **数据验证**: 内置JSON数据验证和修复功能
-- 🎯 **智能分块**: 自动文本分块，支持重叠和表格处理
-- 📊 **进度监控**: 实时处理进度和性能统计
-- 🛠️ **CLI工具**: 提供完整的命令行接口
-- 🔄 **错误恢复**: 自动重试和错误处理机制
+## ✨ Key Features
 
-## 🚀 快速开始
+- 🤖 **Multi-LLM Support**: Compatible with mainstream large language models like OpenAI GPT series
+- 📄 **Document Processing**: Supports plain text and Word document (.docx) processing
+- ⚡ **Efficient Processing**: Provides batch processing, streaming, and parallel processing modes
+- 🔧 **Flexible Configuration**: Supports configuration files and environment variables
+- ✅ **Data Validation**: Built-in JSON data validation and repair functionality
+- 🎯 **Smart Chunking**: Automatic text chunking with overlap and table processing support
+- 📊 **Progress Monitoring**: Real-time processing progress and performance statistics
+- 🛠️ **CLI Tools**: Complete command-line interface
+- 🔄 **Error Recovery**: Automatic retry and error handling mechanisms
 
-### 安装
+## 🚀 Quick Start
+
+### Installation
 
 ```bash
 pip install llmjson
 ```
 
-或从源码安装：
+Or install from source:
 
 ```bash
 git clone https://github.com/lihao77/llmjson.git
@@ -32,64 +34,64 @@ cd llmjson
 pip install -e .
 ```
 
-### 基本使用
+### Basic Usage
 
-#### 1. 命令行工具（推荐）
+#### 1. Command Line Tool (Recommended)
 
-支持两个命令：`llmjson` 和 `llmgen`（简写形式）
+Supports two commands: `llmjson` and `llmgen` (shorthand)
 
-**创建配置文件：**
+**Create configuration file:**
 ```bash
 llmjson create-config --output config.json
-# 或者使用简写
+# Or use shorthand
 llmgen create-config --output config.json
 ```
 
-**处理文本文件：**
+**Process text files:**
 ```bash
-# 处理纯文本文件
+# Process plain text file
 llmjson process document.txt --config config.json --output results/
 
-# 处理Word文档（包含表格）
+# Process Word document (including tables)
 llmjson process document.docx --config config.json --tables
 
-# 开启数据验证
+# Enable data validation
 llmjson process input.txt --config config.json --validation
 
-# 使用自定义提示模板
+# Use custom prompt template
 llmjson process document.txt --template my_template.txt
 
-# 启用详细日志
+# Enable verbose logging
 llmjson process document.txt --config config.json --log
 ```
 
-**批量处理文档文件夹：**
+**Batch process document folders:**
 ```bash
-# 批量处理文件夹中的所有文档
+# Batch process all documents in a folder
 llmjson process-documents /path/to/documents/ --config config.json
 
-# 使用优化流式处理模式（默认）
+# Use optimized streaming mode (default)
 llmjson process-documents /path/to/documents/ --mode optimized
 
-# 使用传统批量处理模式
+# Use traditional batch processing mode
 llmjson process-documents /path/to/documents/ --mode batch
 
-# 包含表格并生成验证报告
+# Include tables and generate validation report
 llmjson process-documents /path/to/documents/ --tables --validation
 ```
 
-**数据验证：**
+**Data validation:**
 ```bash
-# 验证JSON数据
+# Validate JSON data
 llmjson validate data.json
 
-# 保存验证后的数据
+# Save validated data
 llmjson validate data.json --output cleaned_data.json
 
-# 生成验证报告
+# Generate validation report
 llmjson validate data.json --report validation_report.json
 
-# 同时保存数据和报告
+# Save both data and report
 llmjson validate data.json --output cleaned_data.json --report validation_report.json
 ```
 
@@ -104,12 +106,12 @@ from llmjson import (
     PromptTemplate
 )
 
-# 方式1: 从配置文件加载
+# Method 1: Load from configuration file
 config = ConfigManager("config.json")
 merged_config = config.get_merged_config()
 processor = LLMProcessor(**merged_config)
 
-# 方式2: 直接传参数初始化
+# Method 2: Initialize with direct parameters
 processor = LLMProcessor(
     api_key="your-openai-api-key",
     base_url="https://api.openai.com/v1",
@@ -122,22 +124,22 @@ processor = LLMProcessor(
     enable_parallel=True
 )
 
-# 处理文本
-text = "你的文本内容..."
+# Process text
+text = "Your text content..."
 result, info = processor.process_chunk(text, "document_name")
 
 if info['success']:
-    print("处理成功！")
+    print("Processing successful!")
     print(result)
 else:
-    print(f"处理失败: {info['error']}")
+    print(f"Processing failed: {info['error']}")
 ```
 
-## 📖 详细文档
+## 📖 Detailed Documentation
 
-### 配置管理
+### Configuration Management
 
-#### 配置文件示例 (config.json)
+#### Configuration File Example (config.json)
 
 ```json
 {
@@ -163,7 +165,7 @@ else:
 }
 ```
 
-#### 环境变量配置
+#### Environment Variable Configuration
 
 ```bash
 export OPENAI_API_KEY="your-api-key"
@@ -176,62 +178,62 @@ export CHUNK_OVERLAP="200"
 export MAX_WORKERS="4"
 ```
 
-### Word文档处理
+### Word Document Processing
 
 ```python
 from llmjson import WordChunker
 
-# 创建Word分块器
+# Create Word chunker
 chunker = WordChunker(
     max_tokens=2000,
     overlap_tokens=200
 )
 
-# 分块处理Word文档
+# Chunk Word document
 chunks = chunker.chunk_document_with_tables("document.docx")
 
-# 处理每个分块
+# Process each chunk
 for i, chunk in enumerate(chunks):
-    # chunk 已经是字符串，直接处理
+    # chunk is already a string, process directly
     result, info = processor.process_chunk(chunk, f"document_chunk_{i}")
     if info['success']:
-        print(f"块 {i+1} 处理成功")
-        print(f"提取的实体数: {len(result.get('entities', []))}")
-        print(f"提取的关系数: {len(result.get('relations', []))}")
+        print(f"Chunk {i+1} processed successfully")
+        print(f"Entities extracted: {len(result.get('entities', []))}")
+        print(f"Relations extracted: {len(result.get('relations', []))}")
 ```
 
-### 批量处理
+### Batch Processing
 
 ```python
-# 准备文档块列表 (doc_name, chunk_index, chunk_content)
+# Prepare document chunk list (doc_name, chunk_index, chunk_content)
 chunk_items = [
-    ("doc1", 0, "第一个文档第一块的内容..."),
-    ("doc1", 1, "第一个文档第二块的内容..."),
-    ("doc2", 0, "第二个文档第一块的内容..."),
+    ("doc1", 0, "Content of first chunk of first document..."),
+    ("doc1", 1, "Content of second chunk of first document..."),
+    ("doc2", 0, "Content of first chunk of second document..."),
 ]
 
-# 批量处理
+# Batch process
 results = processor.batch_process(chunk_items)
 for result, info in results:
     if info['success']:
-        print(f"文档 {info['doc_name']} 块 {info['chunk_index']} 处理成功")
+        print(f"Document {info['doc_name']} chunk {info['chunk_index']} processed successfully")
         print(result)
     else:
-        print(f"处理失败: {info['error']}")
+        print(f"Processing failed: {info['error']}")
 ```
 
-### 使用 DocumentProcessor 处理完整文档
+### Using DocumentProcessor for Complete Documents
 
 ```python
 from llmjson import DocumentProcessor
 
-# 初始化文档处理器
+# Initialize document processor
 doc_processor = DocumentProcessor(
     config_path="config.json",
-    template_file=None  # 可选：自定义提示模板文件
+    template_file=None  # Optional: custom prompt template file
 )
 
-# 处理单个文档
+# Process single document
 result = doc_processor.process_single_document(
     document_path="document.docx",
     base_output_dir="output",
@@ -240,188 +242,188 @@ result = doc_processor.process_single_document(
 )
 
 if result['success']:
-    print(f"✅ 处理成功！耗时: {result['processing_time']:.2f}秒")
-    print(f"📦 文本块数: {result['chunks']['total']}")
-    print(f"✅ 成功: {result['chunks']['successful']}")
-    print(f"🏷️ 提取实体: {result['entities']['total']}个")
-    print(f"🔗 提取关系: {result['relations']['total']}个")
+    print(f"✅ Processing successful! Time: {result['processing_time']:.2f}s")
+    print(f"📦 Text chunks: {result['chunks']['total']}")
+    print(f"✅ Successful: {result['chunks']['successful']}")
+    print(f"🏷️ Entities extracted: {result['entities']['total']}")
+    print(f"🔗 Relations extracted: {result['relations']['total']}")
 ```
 
-### 数据验证
+### Data Validation
 
 ```python
 from llmjson import DataValidator
 
-# 创建验证器
+# Create validator
 validator = DataValidator()
 
-# 验证JSON数据
+# Validate JSON data
 data = {"entities": [], "relationships": []}
 summary, full_report = validator.validate_data(data)
 
-print(f"验证摘要: {summary}")
-print(f"错误数量: {full_report['error_count']}")
-print(f"修正数量: {full_report['correction_count']}")
+print(f"Validation summary: {summary}")
+print(f"Error count: {full_report['error_count']}")
+print(f"Correction count: {full_report['correction_count']}")
 
-# 导出验证报告
+# Export validation report
 validator.export_validation_report("validation_report.json")
 ```
 
-## 🔧 高级功能
+## 🔧 Advanced Features
 
-### 自定义提示模板
+### Custom Prompt Templates
 
 ```python
 from llmjson import PromptTemplate
 
-# 创建自定义模板
+# Create custom template
 template = PromptTemplate(
-    system_prompt="你是一个专业的知识图谱构建助手...",
-    user_prompt="请从以下文本中提取实体和关系：\n{text}",
+    system_prompt="You are a professional knowledge graph construction assistant...",
+    user_prompt="Please extract entities and relations from the following text:\n{text}",
 )
 
-# 使用自定义模板
+# Use custom template
 processor = LLMProcessor(config, prompt_template=template)
 ```
 
-### 性能监控
+### Performance Monitoring
 
 ```python
 from llmjson import Timer
 
-# 使用计时器
+# Use timer
 timer = Timer()
 timer.start()
 
 result, info = processor.process_chunk(text, "doc")
 
 timer.stop()
-print(f"处理耗时: {timer.elapsed():.2f}秒")
-print(f"格式化时间: {timer.elapsed_str()}")
+print(f"Processing time: {timer.elapsed():.2f}s")
+print(f"Formatted time: {timer.elapsed_str()}")
 
-# 或使用上下文管理器
+# Or use context manager
 with Timer() as timer:
     result, info = processor.process_chunk(text, "doc")
-print(f"处理耗时: {timer.elapsed():.2f}秒")
+print(f"Processing time: {timer.elapsed():.2f}s")
 
-# 获取处理统计
+# Get processing statistics
 stats = processor.get_stats()
-print(f"总请求数: {stats['total_requests']}")
-print(f"成功数: {stats['successful_requests']}")
-print(f"失败数: {stats['failed_requests']}")
-print(f"总Token数: {stats['total_tokens_used']}")
-print(f"JSON解析错误: {stats['json_parsing_errors']}")
+print(f"Total requests: {stats['total_requests']}")
+print(f"Successful: {stats['successful_requests']}")
+print(f"Failed: {stats['failed_requests']}")
+print(f"Total tokens: {stats['total_tokens_used']}")
+print(f"JSON parsing errors: {stats['json_parsing_errors']}")
 ```
 
-## 📋 系统要求
+## 📋 System Requirements
 
 - **Python**: 3.9+
-- **操作系统**: Windows, macOS, Linux
-- **内存**: 建议4GB+
-- **网络**: 需要访问OpenAI API或其他LLM服务
+- **Operating System**: Windows, macOS, Linux
+- **Memory**: 4GB+ recommended
+- **Network**: Requires access to OpenAI API or other LLM services
 
-## 📦 依赖包
+## 📦 Dependencies
 
-**核心依赖：**
-- `openai>=1.35.0` - OpenAI API客户端
-- `json-repair>=0.25.0` - JSON修复工具
-- `python-docx>=1.1.0` - Word文档处理
-- `tiktoken>=0.7.0` - Token计算
-- `requests>=2.31.0` - HTTP请求
-- `typing-extensions>=4.0.0` - 类型注解扩展
+**Core Dependencies:**
+- `openai>=1.35.0` - OpenAI API client
+- `json-repair>=0.25.0` - JSON repair tool
+- `python-docx>=1.1.0` - Word document processing
+- `tiktoken>=0.7.0` - Token calculation
+- `requests>=2.31.0` - HTTP requests
+- `typing-extensions>=4.0.0` - Type annotation extensions
 
-**可选依赖（用于开发）：**
-- `pytest>=7.0.0` - 单元测试
-- `pytest-cov>=4.0.0` - 测试覆盖率
-- `black>=22.0.0` - 代码格式化
-- `flake8>=5.0.0` - 代码检查
-- `mypy>=1.0.0` - 类型检查
+**Optional Dependencies (for development):**
+- `pytest>=7.0.0` - Unit testing
+- `pytest-cov>=4.0.0` - Test coverage
+- `black>=22.0.0` - Code formatting
+- `flake8>=5.0.0` - Code linting
+- `mypy>=1.0.0` - Type checking
 
-## 🛠️ 开发指南
+## 🛠️ Development Guide
 
-### 开发环境设置
+### Development Environment Setup
 
 ```bash
-# 克隆仓库
+# Clone repository
 git clone https://github.com/lihao77/llmjson.git
 cd llmjson
 
-# 创建虚拟环境
+# Create virtual environment
 python -m venv venv
 source venv/bin/activate  # Windows: venv\Scripts\activate
 
-# 安装开发依赖
+# Install development dependencies
 pip install -e ".[dev]"
 
-# 运行测试
+# Run tests
 pytest tests/
 
-# 代码格式化
+# Code formatting
 black llmjson/
 flake8 llmjson/
 ```
 
-### 项目结构
+### Project Structure
 
 ```
 llmjson/
-├── llmjson/          # 主包目录
-│   ├── __init__.py             # 包初始化
-│   ├── cli.py                  # 命令行接口
-│   ├── config.py               # 配置管理
-│   ├── processor.py            # 核心处理器
-│   ├── validator.py            # 数据验证器
-│   ├── prompt_template.py      # 提示模板
-│   ├── word_chunker.py         # Word文档分块
-│   ├── run_mode.py             # 文档处理运行模式
-│   ├── utils.py                # 工具函数
-│   ├── exceptions.py           # 异常定义
-│   └── log/                    # 日志系统
+├── llmjson/          # Main package directory
+│   ├── __init__.py             # Package initialization
+│   ├── cli.py                  # Command line interface
+│   ├── config.py               # Configuration management
+│   ├── processor.py            # Core processor
+│   ├── validator.py            # Data validator
+│   ├── prompt_template.py      # Prompt template
+│   ├── word_chunker.py         # Word document chunker
+│   ├── run_mode.py             # Document processing run modes
+│   ├── utils.py                # Utility functions
+│   ├── exceptions.py           # Exception definitions
+│   └── log/                    # Logging system
 │       ├── __init__.py
 │       ├── config.py
 │       ├── context.py
 │       ├── manager.py
 │       └── setup.py
-├── setup.py                    # 安装配置
-├── requirements.txt            # 依赖列表
-├── pyproject.toml              # 项目配置
-├── README.md                   # 项目说明
-└── LICENSE                     # 许可证
+├── setup.py                    # Installation configuration
+├── requirements.txt            # Dependency list
+├── pyproject.toml              # Project configuration
+├── README.md                   # Project documentation
+└── LICENSE                     # License
 ```
 
-## 🤝 贡献指南
+## 🤝 Contributing
 
-我们欢迎社区贡献！请遵循以下步骤：
+We welcome community contributions! Please follow these steps:
 
-1. Fork 项目仓库
-2. 创建功能分支 (`git checkout -b feature/AmazingFeature`)
-3. 提交更改 (`git commit -m 'Add some AmazingFeature'`)
-4. 推送到分支 (`git push origin feature/AmazingFeature`)
-5. 创建 Pull Request
+1. Fork the project repository
+2. Create a feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Create a Pull Request
 
-### 代码规范
+### Code Standards
 
-- 使用 Black 进行代码格式化
-- 使用 Flake8 进行代码检查
-- 使用 MyPy 进行类型检查
-- 编写单元测试覆盖新功能
-- 更新相关文档
+- Use Black for code formatting
+- Use Flake8 for code linting
+- Use MyPy for type checking
+- Write unit tests covering new features
+- Update relevant documentation
 
-## 📄 许可证
+## 📄 License
 
-本项目采用 MIT 许可证 - 详见 [LICENSE](LICENSE) 文件。
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## 🆘 支持与反馈
+## 🆘 Support and Feedback
 
-- **问题报告**: [GitHub Issues](https://github.com/lihao77/llmjson/issues)
-- **功能请求**: [GitHub Discussions](https://github.com/lihao77/llmjson/discussions)
-- **文档**: [项目Wiki](https://github.com/lihao77/llmjson/wiki)
-- **邮箱**: anonymous
+- **Issue Reporting**: [GitHub Issues](https://github.com/lihao77/llmjson/issues)
+- **Feature Requests**: [GitHub Discussions](https://github.com/lihao77/llmjson/discussions)
+- **Documentation**: [Project Wiki](https://github.com/lihao77/llmjson/wiki)
+- **Email**: anonymous
 
-## 🙏 致谢
+## 🙏 Acknowledgments
 
-感谢所有为这个项目做出贡献的开发者和用户！
+Thanks to all developers and users who have contributed to this project!
 
 ---
 
-**注意**: 使用本工具需要有效的OpenAI API密钥。请确保遵守相关服务条款和使用限制。
+**Note**: Using this tool requires a valid OpenAI API key. Please ensure compliance with relevant terms of service and usage restrictions.
