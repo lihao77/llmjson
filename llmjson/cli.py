@@ -439,81 +439,130 @@ def main():
         main_logger = get_logger()
         main_logger.info("🚀 LLM JSON Generator CLI 启动")
 
-    # 中英双语帮助信息
+    # Professional bilingual help information
     description = """
-LLM JSON Generator - 通过大语言模型生成知识图谱JSON数据
-LLM JSON Generator - Generate knowledge graph JSON data using Large Language Models
+LLM JSON Generator - Extract structured knowledge graphs from documents using LLMs
+基于大语言模型从文档中提取结构化知识图谱
 
-主要功能 | Key Features:
-• 文档处理: 支持 .txt 和 .docx 文档 | Document processing: Support .txt and .docx files
-• 批量处理: 高效处理多个文档 | Batch processing: Efficient processing of multiple documents
-• 数据验证: JSON数据验证和修复 | Data validation: JSON data validation and repair
-• 并行处理: 多线程并行处理 | Parallel processing: Multi-threaded parallel processing
-• 流式处理: 实时处理和输出 | Streaming processing: Real-time processing and output
+FEATURES:
+  • Document Processing    Process .txt and .docx files with intelligent chunking
+  • Batch Operations       Efficient parallel processing of multiple documents
+  • Data Validation        Automatic JSON validation, repair, and quality assurance
+  • Flexible Configuration Environment variables, config files, and CLI options
+  • Production Ready       Retry logic, error handling, and comprehensive logging
+
+主要功能：
+  • 文档处理    支持 .txt 和 .docx 格式，智能分块处理
+  • 批量操作    多文档并行处理，高效处理大规模任务
+  • 数据验证    自动 JSON 验证、修复和质量保证
+  • 灵活配置    支持环境变量、配置文件和命令行参数
+  • 生产就绪    重试逻辑、错误处理和完整日志记录
 """
 
     examples = """
-使用示例 | Usage Examples:
+EXAMPLES:
 
-📋 配置管理 | Configuration Management:
-  # 创建配置文件 | Create configuration file
-  llmjson create-config
-  llmjson create-config -o my_config.json
+  Configuration Setup:
+    $ llmjson create-config                    # Create default config.json
+    $ llmjson create-config -o my_config.json  # Custom config path
 
-📄 单文档处理 | Single Document Processing:
-  # 基础处理 | Basic processing
-  llmjson process document.txt
-  llmjson process document.docx
+  Single Document Processing:
+    $ llmjson process document.txt             # Process with default config
+    $ llmjson process report.docx -o output/   # Custom output directory
+    $ llmjson process doc.txt -c config.json   # Specify config file
+    $ llmjson process data.docx --tables       # Include table extraction
+    $ llmjson process file.txt --validation -l # Enable validation and logging
 
-  # 自定义输出目录 | Custom output directory
-  llmjson process document.txt -o results/
+  Batch Document Processing:
+    $ llmjson process-documents ./docs/                    # Process all documents
+    $ llmjson process-documents ./docs/ -m optimized       # Streaming mode (recommended)
+    $ llmjson process-documents ./docs/ -m batch           # Traditional batch mode
+    $ llmjson process-documents ./docs/ -c config.json \\
+        --tables --validation -o results/                  # Full options
 
-  # 使用自定义配置 | Use custom configuration
-  llmjson process document.txt -c my_config.json
+  Data Validation:
+    $ llmjson validate data.json                           # Basic validation
+    $ llmjson validate data.json -o clean.json             # Save cleaned data
+    $ llmjson validate data.json -r report.json            # Generate report
+    $ llmjson validate data.json -o clean.json -r report.json  # Both outputs
 
-  # 包含表格和验证 | Include tables and validation
-  llmjson process document.txt --tables --validation
+  Advanced Usage:
+    $ llmjson process doc.txt -t custom_template.json      # Custom prompt template
+    $ llmjson process doc.txt -c prod_config.json          # Production configuration
+    $ export OPENAI_API_KEY="sk-..."                       # Set API key via env
+    $ llmjson process doc.txt -l 2>&1 | tee process.log    # Capture detailed logs
 
-  # 启用详细日志 | Enable detailed logging
-  llmjson process document.txt -l
+OUTPUT STRUCTURE:
+  output/
+  ├── document_name/
+  │   ├── knowledge_graph.json       Final extracted knowledge graph
+  │   ├── chunks_results.json        Per-chunk processing results
+  │   ├── failed_chunks.json         Failed chunks (if any)
+  │   └── validation_report.json     Data quality report (if --validation)
 
-📁 批量文档处理 | Batch Document Processing:
-  # 传统批量处理 | Traditional batch processing
-  llmjson process-documents /path/to/docs/ -m batch -o results/
+WORKFLOW:
+  1. Create configuration file with API credentials
+  2. Process documents to extract knowledge graph
+  3. Validate and clean extracted data
+  4. Use validated JSON for downstream applications
 
-  # 优化流式处理(推荐) | Optimized streaming processing (recommended)
-  llmjson process-documents /path/to/docs/ -m optimized -o results/
+TIPS:
+  • Store API key in environment variable for security: OPENAI_API_KEY
+  • Use 'optimized' mode for large document batches (lower memory usage)
+  • Enable --validation to ensure data quality
+  • Use -l flag when troubleshooting issues
 
-  # 完整参数示例 | Full parameter example
-  llmjson process-documents /path/to/docs/ \\
-    -m optimized -o batch_results/ -c my_config.json --tables --validation -l
+示例用法：
 
-🔍 数据验证 | Data Validation:
-  # 基础验证 | Basic validation
-  llmjson validate data.json
+  配置设置：
+    $ llmjson create-config                    # 创建默认 config.json
+    $ llmjson create-config -o my_config.json  # 自定义配置路径
 
-  # 保存验证后的数据和报告 | Save validated data and report
-  llmjson validate data.json -o validated_data.json -r validation_report.json
+  单文档处理：
+    $ llmjson process document.txt             # 使用默认配置处理
+    $ llmjson process report.docx -o output/   # 指定输出目录
+    $ llmjson process doc.txt -c config.json   # 指定配置文件
+    $ llmjson process data.docx --tables       # 提取表格数据
+    $ llmjson process file.txt --validation -l # 启用验证和日志
 
-💡 高级用法 | Advanced Usage:
-  # 使用自定义提示模板 | Use custom prompt template
-  llmjson process document.txt -t custom_template.json
+  批量文档处理：
+    $ llmjson process-documents ./docs/                    # 处理所有文档
+    $ llmjson process-documents ./docs/ -m optimized       # 流式模式（推荐）
+    $ llmjson process-documents ./docs/ -m batch           # 传统批量模式
+    $ llmjson process-documents ./docs/ -c config.json \\
+        --tables --validation -o results/                  # 完整选项
 
-  # 处理包含大量表格的文档 | Process documents with many tables
-  llmjson process-document folder/ --tables --validation -l
+  数据验证：
+    $ llmjson validate data.json                           # 基础验证
+    $ llmjson validate data.json -o clean.json             # 保存清理数据
+    $ llmjson validate data.json -r report.json            # 生成报告
+    $ llmjson validate data.json -o clean.json -r report.json  # 同时输出
 
-🎯 输出说明 | Output Description:
-  • results/ - 处理结果目录 | Processing results directory
-  • chunks_results.json - 文本块处理结果 | Text chunk processing results
-  • failed_chunks.json - 失败的文本块 | Failed text chunks
-  • validation_report.json - 数据验证报告 | Data validation report
-  • knowledge_graph.json - 最终知识图谱 | Final knowledge graph
+  高级用法：
+    $ llmjson process doc.txt -t custom_template.json      # 自定义提示模板
+    $ llmjson process doc.txt -c prod_config.json          # 生产环境配置
+    $ export OPENAI_API_KEY="sk-..."                       # 通过环境变量设置密钥
+    $ llmjson process doc.txt -l 2>&1 | tee process.log    # 捕获详细日志
 
-⚠️ 注意事项 | Important Notes:
-  • 首次使用前请先创建配置文件 | Create configuration file before first use
-  • 确保API密钥已正确配置 | Ensure API key is properly configured
-  • 大文档建议使用流式处理 | Use streaming processing for large documents
-  • 启用日志以获得详细错误信息 | Enable logging for detailed error information
+输出结构：
+  output/
+  ├── document_name/
+  │   ├── knowledge_graph.json       最终提取的知识图谱
+  │   ├── chunks_results.json        每个文本块的处理结果
+  │   ├── failed_chunks.json         失败的文本块（如有）
+  │   └── validation_report.json     数据质量报告（如启用 --validation）
+
+工作流程：
+  1. 创建包含 API 凭证的配置文件
+  2. 处理文档以提取知识图谱
+  3. 验证和清理提取的数据
+  4. 将验证后的 JSON 用于下游应用
+
+使用技巧：
+  • 将 API 密钥存储在环境变量中以提高安全性：OPENAI_API_KEY
+  • 对大型文档批次使用 'optimized' 模式（降低内存使用）
+  • 启用 --validation 以确保数据质量
+  • 排查问题时使用 -l 标志
 """
 
     parser = argparse.ArgumentParser(
@@ -522,180 +571,359 @@ LLM JSON Generator - Generate knowledge graph JSON data using Large Language Mod
         epilog=examples
     )
     
-    subparsers = parser.add_subparsers(dest='command', help='可用命令 | Available commands')
+    subparsers = parser.add_subparsers(
+        dest='command',
+        title='COMMANDS',
+        description='Available commands for document processing and validation',
+        metavar='{create-config,process,process-documents,validate}',
+        help='command to execute (use "llmjson <command> -h" for details)'
+    )
 
-    # 创建配置命令
+    # Create configuration command
     config_help = """
-创建示例配置文件 | Create example configuration file
+Generate a configuration file with default LLM and processing settings.
 
-此命令创建包含默认设置的配置文件，包含LLM配置和处理配置。
-This command creates a configuration file with default settings, including LLM and processing configurations.
+This command creates a JSON configuration file containing:
+  • LLM settings (API key, model, temperature, tokens, retry logic)
+  • Processing settings (chunk size, overlap, parallel workers)
 
-示例 | Example:
-  llmjson create-config
-  llmjson create-config -o /path/to/my_config.json
+The generated file can be customized and used with -c/--config option.
+
+USAGE:
+  llmjson create-config [-o OUTPUT]
+
+EXAMPLES:
+  $ llmjson create-config                    # Creates config.json in current directory
+  $ llmjson create-config -o app/config.json # Custom output path
+
+NOTE: Remember to edit the file and set your actual API key before use.
+
+生成包含默认 LLM 和处理设置的配置文件。
+
+此命令创建包含以下内容的 JSON 配置文件：
+  • LLM 设置（API 密钥、模型、温度、令牌数、重试逻辑）
+  • 处理设置（分块大小、重叠、并行工作线程数）
+
+生成的文件可以自定义并通过 -c/--config 选项使用。
+
+用法：
+  llmjson create-config [-o 输出路径]
+
+示例：
+  $ llmjson create-config                    # 在当前目录创建 config.json
+  $ llmjson create-config -o app/config.json # 自定义输出路径
+
+注意：请记得编辑文件并设置实际的 API 密钥后再使用。
 """
     config_parser = subparsers.add_parser('create-config',
-                                         help='创建示例配置文件 | Create example configuration file',
+                                         help='Generate configuration file with default settings',
                                          description=config_help,
                                          formatter_class=argparse.RawDescriptionHelpFormatter)
     config_parser.add_argument('-o', '--output',
-                             help='配置文件输出路径 | Configuration file output path (默认: config.json | default: config.json)')
+                             metavar='FILE',
+                             help='output path for configuration file (default: config.json)')
     config_parser.set_defaults(func=create_config_command)
 
-    # 处理文本命令
+    # Process document command
     process_help = """
-处理单个文本文件 | Process a single text document
+Extract entities and relationships from a document to build a knowledge graph.
 
-处理单个文档(.txt或.docx)，提取实体和关系生成知识图谱。
-Process a single document (.txt or .docx) to extract entities and relationships and generate a knowledge graph.
+Processes a single document (.txt or .docx), automatically chunks the text, sends
+each chunk to the LLM for entity/relationship extraction, and aggregates results
+into a unified knowledge graph.
 
-支持的格式 | Supported formats:
-• 纯文本文件 (.txt) | Plain text files (.txt)
-• Word文档 (.docx) | Word documents (.docx)
+SUPPORTED FORMATS:
+  • Plain text files (.txt)
+  • Microsoft Word documents (.docx)
 
-输出文件 | Output files:
-• knowledge_graph.json - 最终知识图谱 | Final knowledge graph
-• chunks_results.json - 文本块处理结果 | Text chunk processing results
-• failed_chunks.json - 失败的文本块 | Failed text chunks (if any)
-• validation_report.json - 验证报告 | Validation report (if --validation)
+OUTPUT FILES:
+  knowledge_graph.json       Final aggregated knowledge graph
+  chunks_results.json        Detailed per-chunk processing results
+  failed_chunks.json         Information about failed chunks (if any)
+  validation_report.json     Data quality report (with --validation flag)
 
-示例 | Examples:
-  # 基础处理 | Basic processing
-  llmjson process document.txt
+USAGE:
+  llmjson process DOCUMENT [OPTIONS]
 
-  # 自定义输出目录 | Custom output directory
-  llmjson process document.docx -o results/
+OPTIONS:
+  -c, --config FILE         Configuration file path (default: config.json)
+  -o, --output DIR          Output directory (default: output)
+  -t, --template FILE       Custom prompt template file
+  --tables                  Extract and process table content
+  --validation              Validate and clean extracted data
+  -l, --log                 Enable detailed console logging
 
-  # 使用自定义配置 | Use custom configuration
-  llmjson process document.txt -c my_config.json
+EXAMPLES:
+  $ llmjson process document.txt                      # Basic processing
+  $ llmjson process report.docx -o results/           # Custom output directory
+  $ llmjson process data.txt -c custom_config.json    # Custom configuration
+  $ llmjson process tables.docx --tables --validation # Extract tables with validation
+  $ llmjson process debug.txt -l                      # Enable detailed logging
 
-  # 包含表格和启用验证 | Include tables and enable validation
-  llmjson process document.txt --tables --validation
+处理单个文档以提取实体和关系，构建知识图谱。
 
-  # 启用详细日志 | Enable detailed logging
-  llmjson process document.txt -l
+处理单个文档（.txt 或 .docx），自动分块文本，将每个块发送到 LLM 进行
+实体/关系提取，并将结果聚合为统一的知识图谱。
+
+支持格式：
+  • 纯文本文件 (.txt)
+  • Microsoft Word 文档 (.docx)
+
+输出文件：
+  knowledge_graph.json       最终聚合的知识图谱
+  chunks_results.json        详细的每块处理结果
+  failed_chunks.json         失败块的信息（如有）
+  validation_report.json     数据质量报告（使用 --validation 标志）
+
+用法：
+  llmjson process 文档 [选项]
+
+选项：
+  -c, --config FILE         配置文件路径（默认：config.json）
+  -o, --output DIR          输出目录（默认：output）
+  -t, --template FILE       自定义提示模板文件
+  --tables                  提取和处理表格内容
+  --validation              验证和清理提取的数据
+  -l, --log                 启用详细的控制台日志
+
+示例：
+  $ llmjson process document.txt                      # 基础处理
+  $ llmjson process report.docx -o results/           # 自定义输出目录
+  $ llmjson process data.txt -c custom_config.json    # 自定义配置
+  $ llmjson process tables.docx --tables --validation # 提取表格并验证
+  $ llmjson process debug.txt -l                      # 启用详细日志
 """
     process_parser = subparsers.add_parser('process',
-                                         help='处理单个文本文件 | Process a single text document',
+                                         help='Process a single document to extract knowledge graph',
                                          description=process_help,
                                          formatter_class=argparse.RawDescriptionHelpFormatter)
     process_parser.add_argument('document_path',
-                             help='文档路径 | Document file path (.txt or .docx)')
+                             metavar='DOCUMENT',
+                             help='path to document file (.txt or .docx)')
     process_parser.add_argument('-c', '--config',
-                             help='配置文件路径 | Configuration file path (默认: config.json | default: config.json)')
+                             metavar='FILE',
+                             help='configuration file path (default: config.json)')
     process_parser.add_argument('-o', '--output',
-                             help='输出目录 | Output directory (默认: output | default: output)')
+                             metavar='DIR',
+                             help='output directory (default: output)')
     process_parser.add_argument('-t', '--template',
-                             help='提示模板文件路径 | Prompt template file path (默认: None | default: None)')
+                             metavar='FILE',
+                             help='custom prompt template file')
     process_parser.add_argument('--tables', action='store_true',
-                             help='包含表格 | Include tables in processing')
+                             help='extract and process tables from documents')
     process_parser.add_argument('--validation', action='store_true',
-                             help='开启数据验证 | Enable data validation')
+                             help='validate and clean extracted data')
     process_parser.add_argument('-l', '--log', action='store_true',
-                             help='启用控制台日志输出 | Enable console logging output')
+                             help='enable detailed console logging')
     process_parser.set_defaults(func=process_text_command)
 
-    # 处理文档列表命令
+    # Process documents batch command
     docs_help = """
-批量处理文档文件夹 | Batch process document folder
+Batch process all documents in a folder with configurable processing modes.
 
-处理文件夹中的所有文档，支持两种处理模式。
-Process all documents in a folder with two processing modes available.
+Recursively discovers and processes all .txt and .docx files in the specified
+folder. Supports two processing modes optimized for different scenarios.
 
-处理模式 | Processing Modes:
-• batch: 传统批量处理，一次性加载所有文档 | Traditional batch processing, load all documents at once
-  适合 | Suitable for: 少量文档，内存充足 | Few documents, sufficient memory
-• optimized: 优化流式处理，分批流式处理 | Optimized streaming processing, batch streaming
-  适合 | Suitable for: 大量文档，内存有限 | Many documents, limited memory (推荐 | recommended)
+PROCESSING MODES:
+  batch                     Load all documents into memory, process in parallel
+                            Best for: Small to medium datasets, ample RAM
+  
+  optimized (recommended)   Stream documents with batched processing
+                            Best for: Large datasets, memory constraints
+                            Lower memory footprint, better scalability
 
-输出结构 | Output Structure:
-results/
-├── document1/
-│   ├── knowledge_graph.json
-│   ├── chunks_results.json
-│   └── validation_report.json
-└── document2/
-    ├── knowledge_graph.json
-    └── ...
+OUTPUT STRUCTURE:
+  results/
+  ├── document1/
+  │   ├── knowledge_graph.json      Extracted knowledge graph
+  │   ├── chunks_results.json       Per-chunk details
+  │   └── validation_report.json    Quality report (if --validation)
+  ├── document2/
+  │   └── ...
+  └── processing_summary.json       Overall statistics
 
-示例 | Examples:
-  # 传统批量处理 | Traditional batch processing
-  llmjson process-documents /path/to/docs/ -m batch -o results/
+USAGE:
+  llmjson process-documents FOLDER [OPTIONS]
 
-  # 优化流式处理 | Optimized streaming processing
-  llmjson process-documents /path/to/docs/ -m optimized -o results/
+OPTIONS:
+  -c, --config FILE         Configuration file path (default: config.json)
+  -o, --output DIR          Output directory (default: output)
+  -m, --mode MODE           Processing mode: batch or optimized (default: optimized)
+  -t, --template FILE       Custom prompt template file
+  --tables                  Extract and process table content
+  --validation              Validate and clean extracted data
+  -l, --log                 Enable detailed console logging
 
-  # 完整参数 | Full parameters
-  llmjson process-documents /path/to/docs/ \\
-    -m optimized -o batch_results/ -c my_config.json --tables --validation -l
+EXAMPLES:
+  $ llmjson process-documents ./documents/                    # Process with defaults
+  $ llmjson process-documents ./docs/ -m batch                # Traditional batch mode
+  $ llmjson process-documents ./docs/ -m optimized -o out/    # Streaming mode
+  $ llmjson process-documents ./docs/ --tables --validation   # Extract tables with validation
+  $ llmjson process-documents ./docs/ -c prod_config.json -l  # Production config with logging
+
+批量处理文件夹中的所有文档，支持可配置的处理模式。
+
+递归发现并处理指定文件夹中的所有 .txt 和 .docx 文件。支持针对不同场景
+优化的两种处理模式。
+
+处理模式：
+  batch                     将所有文档加载到内存中，并行处理
+                            最适合：中小型数据集，充足的 RAM
+  
+  optimized（推荐）         流式处理文档，分批处理
+                            最适合：大型数据集，内存受限
+                            更低的内存占用，更好的可扩展性
+
+输出结构：
+  results/
+  ├── document1/
+  │   ├── knowledge_graph.json      提取的知识图谱
+  │   ├── chunks_results.json       每块详细信息
+  │   └── validation_report.json    质量报告（如 --validation）
+  ├── document2/
+  │   └── ...
+  └── processing_summary.json       总体统计
+
+用法：
+  llmjson process-documents 文件夹 [选项]
+
+选项：
+  -c, --config FILE         配置文件路径（默认：config.json）
+  -o, --output DIR          输出目录（默认：output）
+  -m, --mode MODE           处理模式：batch 或 optimized（默认：optimized）
+  -t, --template FILE       自定义提示模板文件
+  --tables                  提取和处理表格内容
+  --validation              验证和清理提取的数据
+  -l, --log                 启用详细的控制台日志
+
+示例：
+  $ llmjson process-documents ./documents/                    # 使用默认设置处理
+  $ llmjson process-documents ./docs/ -m batch                # 传统批量模式
+  $ llmjson process-documents ./docs/ -m optimized -o out/    # 流式模式
+  $ llmjson process-documents ./docs/ --tables --validation   # 提取表格并验证
+  $ llmjson process-documents ./docs/ -c prod_config.json -l  # 生产配置并记录日志
 """
     docs_parser = subparsers.add_parser('process-documents',
-                                      help='批量处理文档文件夹 | Batch process document folder',
+                                      help='Batch process all documents in a folder',
                                       description=docs_help,
                                       formatter_class=argparse.RawDescriptionHelpFormatter)
     docs_parser.add_argument('folder_path',
-                           help='包含文档的文件夹路径 | Path to folder containing documents')
+                           metavar='FOLDER',
+                           help='path to folder containing documents')
     docs_parser.add_argument('-c', '--config',
-                           help='配置文件路径 | Configuration file path (默认: config.json | default: config.json)')
+                           metavar='FILE',
+                           help='configuration file path (default: config.json)')
     docs_parser.add_argument('-o', '--output',
-                           help='输出目录 | Output directory (默认: output | default: output)')
+                           metavar='DIR',
+                           help='output directory (default: output)')
     docs_parser.add_argument('-m', '--mode', choices=['batch', 'optimized'],
-                           help='处理模式 | Processing mode: batch (传统批量 | traditional batch), optimized (优化流式 | optimized streaming, 默认 | default)')
+                           metavar='MODE',
+                           help='processing mode: batch or optimized (default: optimized)')
     docs_parser.add_argument('-t', '--template',
-                           help='提示模板文件路径 | Prompt template file path (默认: None | default: None)')
+                           metavar='FILE',
+                           help='custom prompt template file')
     docs_parser.add_argument('--tables', action='store_true',
-                           help='包含表格 | Include tables in processing')
+                           help='extract and process tables from documents')
     docs_parser.add_argument('--validation', action='store_true',
-                           help='开启数据验证 | Enable data validation')
+                           help='validate and clean extracted data')
     docs_parser.add_argument('-l', '--log', action='store_true',
-                           help='启用控制台日志输出 | Enable console logging output')
+                           help='enable detailed console logging')
     docs_parser.set_defaults(func=process_documents_command)
 
     # 验证数据命令
     validate_help = """
-验证JSON数据 | Validate JSON data
+Validate, repair, and clean JSON knowledge graph data with detailed reporting.
 
-对JSON数据进行验证、修复和清理，生成详细的验证报告。
-Validate, repair, and clean JSON data with detailed validation reports.
+Performs comprehensive validation of extracted knowledge graph data, including
+schema validation, data integrity checks, automatic error correction, and
+generation of detailed quality reports.
 
-验证功能 | Validation Features:
-• JSON格式验证 | JSON format validation
-• 数据结构检查 | Data structure verification
-• 错误自动修复 | Automatic error correction
-• 数据完整性检查 | Data integrity checking
-• 详细报告生成 | Detailed report generation
+VALIDATION FEATURES:
+  • JSON format validation and repair
+  • Knowledge graph schema verification
+  • Entity and relationship validation
+  • Automatic correction of common errors
+  • Data completeness and consistency checks
+  • Duplicate detection and removal
 
-报告内容 | Report Content:
-• 验证成功率 | Validation success rate
-• 错误统计 | Error statistics
-• 修复统计 | Repair statistics
-• 错误详情 | Error details
-• 警告信息 | Warning information
+REPORT CONTENT:
+  • Validation success rate and overall quality score
+  • Error and warning counts with detailed descriptions
+  • Automatic corrections applied
+  • Data statistics (entities, relationships, etc.)
+  • Recommendations for manual review
 
-示例 | Examples:
-  # 基础验证 | Basic validation
-  llmjson validate data.json
+USAGE:
+  llmjson validate INPUT [OPTIONS]
 
-  # 保存验证后的数据 | Save validated data
-  llmjson validate data.json -o clean_data.json
+OPTIONS:
+  -o, --output FILE         Save validated and cleaned data
+  -r, --report FILE         Generate detailed validation report
 
-  # 生成验证报告 | Generate validation report
-  llmjson validate data.json -r report.json
+EXAMPLES:
+  $ llmjson validate data.json                              # Basic validation
+  $ llmjson validate data.json -o clean.json                # Save cleaned data
+  $ llmjson validate data.json -r report.json               # Generate report only
+  $ llmjson validate data.json -o clean.json -r report.json # Save both outputs
 
-  # 保存数据和报告 | Save both data and report
-  llmjson validate data.json -o clean_data.json -r report.json
+TYPICAL WORKFLOW:
+  1. Process documents:    llmjson process-documents ./docs/
+  2. Validate results:     llmjson validate output/*/knowledge_graph.json -o validated.json
+  3. Review report:        Check validation metrics and warnings
+  4. Use validated data:   Downstream applications use validated.json
+
+验证、修复和清理 JSON 知识图谱数据，并生成详细报告。
+
+对提取的知识图谱数据进行全面验证，包括模式验证、数据完整性检查、
+自动错误修正和详细质量报告生成。
+
+验证功能：
+  • JSON 格式验证和修复
+  • 知识图谱模式验证
+  • 实体和关系验证
+  • 常见错误的自动修正
+  • 数据完整性和一致性检查
+  • 重复检测和删除
+
+报告内容：
+  • 验证成功率和整体质量分数
+  • 错误和警告计数及详细描述
+  • 应用的自动修正
+  • 数据统计（实体、关系等）
+  • 人工审查建议
+
+用法：
+  llmjson validate 输入 [选项]
+
+选项：
+  -o, --output FILE         保存验证和清理后的数据
+  -r, --report FILE         生成详细验证报告
+
+示例：
+  $ llmjson validate data.json                              # 基础验证
+  $ llmjson validate data.json -o clean.json                # 保存清理数据
+  $ llmjson validate data.json -r report.json               # 仅生成报告
+  $ llmjson validate data.json -o clean.json -r report.json # 保存两个输出
+
+典型工作流程：
+  1. 处理文档：       llmjson process-documents ./docs/
+  2. 验证结果：       llmjson validate output/*/knowledge_graph.json -o validated.json
+  3. 审查报告：       检查验证指标和警告
+  4. 使用验证数据：   下游应用使用 validated.json
 """
     validate_parser = subparsers.add_parser('validate',
-                                          help='验证JSON数据 | Validate JSON data',
+                                          help='Validate and clean JSON knowledge graph data',
                                           description=validate_help,
                                           formatter_class=argparse.RawDescriptionHelpFormatter)
     validate_parser.add_argument('input',
-                              help='输入JSON文件路径 | Input JSON file path')
+                              metavar='INPUT',
+                              help='input JSON file to validate')
     validate_parser.add_argument('-o', '--output',
-                              help='验证后数据输出路径 | Validated data output path')
+                              metavar='FILE',
+                              help='save validated and cleaned data to file')
     validate_parser.add_argument('-r', '--report',
-                              help='验证报告输出路径 | Validation report output path')
+                              metavar='FILE',
+                              help='generate detailed validation report')
     validate_parser.set_defaults(func=validate_command)
     
     # 解析参数

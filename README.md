@@ -50,18 +50,47 @@ llmgen create-config --output config.json
 # 处理纯文本文件
 llmjson process document.txt --config config.json --output results/
 
-# 处理Word文档
-llmjson process document.docx --config config.json --streaming
+# 处理Word文档（包含表格）
+llmjson process document.docx --config config.json --tables
 
-# 使用自定义分块大小
-llmjson process input.txt --chunk-size 3000
+# 开启数据验证
+llmjson process input.txt --config config.json --validation
+
+# 使用自定义提示模板
+llmjson process document.txt --template my_template.txt
+
+# 启用详细日志
+llmjson process document.txt --config config.json --log
+```
+
+**批量处理文档文件夹：**
+```bash
+# 批量处理文件夹中的所有文档
+llmjson process-documents /path/to/documents/ --config config.json
+
+# 使用优化流式处理模式（默认）
+llmjson process-documents /path/to/documents/ --mode optimized
+
+# 使用传统批量处理模式
+llmjson process-documents /path/to/documents/ --mode batch
+
+# 包含表格并生成验证报告
+llmjson process-documents /path/to/documents/ --tables --validation
 ```
 
 **数据验证：**
 ```bash
-llmjson validate data.json --schema schema.json --output validation_report.json
-# 或者使用简写
-llmgen validate data.json --schema schema.json --output validation_report.json
+# 验证JSON数据
+llmjson validate data.json
+
+# 保存验证后的数据
+llmjson validate data.json --output cleaned_data.json
+
+# 生成验证报告
+llmjson validate data.json --report validation_report.json
+
+# 同时保存数据和报告
+llmjson validate data.json --output cleaned_data.json --report validation_report.json
 ```
 
 #### 2. Python API
@@ -75,14 +104,23 @@ from llmjson import (
     PromptTemplate
 )
 
-# 创建配置
-config = ConfigManager()
-config.llm_config.api_key = "your-openai-api-key"
-config.llm_config.model = "gpt-4o-mini"
-config.processing_config.chunk_size = 2000
+# 方式1: 从配置文件加载
+config = ConfigManager("config.json")
+merged_config = config.get_merged_config()
+processor = LLMProcessor(**merged_config)
 
-# 初始化处理器
-processor = LLMProcessor(config)
+# 方式2: 直接传参数初始化
+processor = LLMProcessor(
+    api_key="your-openai-api-key",
+    base_url="https://api.openai.com/v1",
+    model="gpt-4o-mini",
+    temperature=0.1,
+    max_tokens=4000,
+    chunk_size=2000,
+    chunk_overlap=200,
+    max_workers=4,
+    enable_parallel=True
+)
 
 # 处理文本
 text = "你的文本内容..."
@@ -103,17 +141,20 @@ else:
 
 ```json
 {
-  "llm_config": {
+  "llm": {
     "api_key": "your-openai-api-key",
-    "base_url": "https://openrouter.ai/api/v1",
-    "model": "deepseek/deepseek-chat-v3-0324:free",
+    "base_url": "https://api.openai.com/v1",
+    "model": "gpt-4o-mini",
     "temperature": 0.1,
-    "max_tokens": 20000,
+    "max_tokens": 4000,
     "timeout": 60,
     "max_retries": 3,
-    "retry_delay": 1.0
+    "retry_delay": 1.0,
+    "stream": false,
+    "force_json": true,
+    "extra_body": null
   },
-  "processing_config": {
+  "processing": {
     "chunk_size": 2000,
     "chunk_overlap": 200,
     "max_workers": 4,
@@ -126,11 +167,13 @@ else:
 
 ```bash
 export OPENAI_API_KEY="your-api-key"
-export LLM_MODEL="gpt-4o-mini"
+export OPENAI_BASE_URL="https://api.openai.com/v1"
+export OPENAI_MODEL="gpt-4o-mini"
 export LLM_TEMPERATURE="0.1"
+export LLM_MAX_TOKENS="4000"
 export CHUNK_SIZE="2000"
+export CHUNK_OVERLAP="200"
 export MAX_WORKERS="4"
-export ENABLE_PARALLEL="true"
 ```
 
 ### Word文档处理
@@ -149,34 +192,59 @@ chunks = chunker.chunk_document_with_tables("document.docx")
 
 # 处理每个分块
 for i, chunk in enumerate(chunks):
-    result, info = processor.process_chunk(chunk, f"doc_chunk_{i}")
+    # chunk 已经是字符串，直接处理
+    result, info = processor.process_chunk(chunk, f"document_chunk_{i}")
     if info['success']:
         print(f"块 {i+1} 处理成功")
+        print(f"提取的实体数: {len(result.get('entities', []))}")
+        print(f"提取的关系数: {len(result.get('relations', []))}")
 ```
 
-### 批量和流式处理
+### 批量处理
 
 ```python
-# 准备文档列表
-documents = [
-    ("doc1", 0, "第一个文档的内容..."),
-    ("doc2", 0, "第二个文档的内容..."),
-    # 更多文档...
+# 准备文档块列表 (doc_name, chunk_index, chunk_content)
+chunk_items = [
+    ("doc1", 0, "第一个文档第一块的内容..."),
+    ("doc1", 1, "第一个文档第二块的内容..."),
+    ("doc2", 0, "第二个文档第一块的内容..."),
 ]
 
 # 批量处理
-results = processor.batch_process(documents)
+results = processor.batch_process(chunk_items)
 for result, info in results:
     if info['success']:
-        print("处理成功")
+        print(f"文档 {info['doc_name']} 块 {info['chunk_index']} 处理成功")
+        print(result)
     else:
         print(f"处理失败: {info['error']}")
+```
 
-# 流式处理（适合大量文档）
-for result, info in processor.stream_process(documents):
-    if info['success']:
-        # 实时处理每个结果
-        save_result(result)
+### 使用 DocumentProcessor 处理完整文档
+
+```python
+from llmjson import DocumentProcessor
+
+# 初始化文档处理器
+doc_processor = DocumentProcessor(
+    config_path="config.json",
+    template_file=None  # 可选：自定义提示模板文件
+)
+
+# 处理单个文档
+result = doc_processor.process_single_document(
+    document_path="document.docx",
+    base_output_dir="output",
+    include_tables=True,
+    generate_validation_report=True
+)
+
+if result['success']:
+    print(f"✅ 处理成功！耗时: {result['processing_time']:.2f}秒")
+    print(f"📦 文本块数: {result['chunks']['total']}")
+    print(f"✅ 成功: {result['chunks']['successful']}")
+    print(f"🏷️ 提取实体: {result['entities']['total']}个")
+    print(f"🔗 提取关系: {result['relations']['total']}个")
 ```
 
 ### 数据验证
@@ -222,15 +290,27 @@ processor = LLMProcessor(config, prompt_template=template)
 from llmjson import Timer
 
 # 使用计时器
+timer = Timer()
+timer.start()
+
+result, info = processor.process_chunk(text, "doc")
+
+timer.stop()
+print(f"处理耗时: {timer.elapsed():.2f}秒")
+print(f"格式化时间: {timer.elapsed_str()}")
+
+# 或使用上下文管理器
 with Timer() as timer:
     result, info = processor.process_chunk(text, "doc")
-
-print(f"处理耗时: {timer.elapsed:.2f}秒")
+print(f"处理耗时: {timer.elapsed():.2f}秒")
 
 # 获取处理统计
-stats = processor.get_processing_stats()
-print(f"总处理时间: {stats['total_time']:.2f}秒")
-print(f"成功率: {stats['success_rate']:.1%}")
+stats = processor.get_stats()
+print(f"总请求数: {stats['total_requests']}")
+print(f"成功数: {stats['successful_requests']}")
+print(f"失败数: {stats['failed_requests']}")
+print(f"总Token数: {stats['total_tokens_used']}")
+print(f"JSON解析错误: {stats['json_parsing_errors']}")
 ```
 
 ## 📋 系统要求
@@ -242,13 +322,20 @@ print(f"成功率: {stats['success_rate']:.1%}")
 
 ## 📦 依赖包
 
+**核心依赖：**
 - `openai>=1.35.0` - OpenAI API客户端
 - `json-repair>=0.25.0` - JSON修复工具
 - `python-docx>=1.1.0` - Word文档处理
 - `tiktoken>=0.7.0` - Token计算
 - `requests>=2.31.0` - HTTP请求
-- `click>=8.0.0` - 命令行接口
-- `pydantic>=2.0.0` - 数据验证
+- `typing-extensions>=4.0.0` - 类型注解扩展
+
+**可选依赖（用于开发）：**
+- `pytest>=7.0.0` - 单元测试
+- `pytest-cov>=4.0.0` - 测试覆盖率
+- `black>=22.0.0` - 代码格式化
+- `flake8>=5.0.0` - 代码检查
+- `mypy>=1.0.0` - 类型检查
 
 ## 🛠️ 开发指南
 
