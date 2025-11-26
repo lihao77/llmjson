@@ -418,7 +418,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - **Issue Reporting**: [GitHub Issues](https://github.com/lihao77/llmjson/issues)
 - **Feature Requests**: [GitHub Discussions](https://github.com/lihao77/llmjson/discussions)
 - **Documentation**: [Project Wiki](https://github.com/lihao77/llmjson/wiki)
-- **Email**: anonymous
+- **Email**: qingyuepei@foxmail.com
 
 ## 🙏 Acknowledgments
 

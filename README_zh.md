@@ -416,7 +416,7 @@ llmjson/
 - **问题报告**: [GitHub Issues](https://github.com/lihao77/llmjson/issues)
 - **功能请求**: [GitHub Discussions](https://github.com/lihao77/llmjson/discussions)
 - **文档**: [项目Wiki](https://github.com/lihao77/llmjson/wiki)
-- **邮箱**: anonymous
+- **邮箱**: qingyuepei@foxmail.com
 
 ## 🙏 致谢
 

@@ -19,7 +19,7 @@ setup(
     name="llmjson",
     version="1.0.0",
     author="lihao77",
-    author_email="anonymous",
+    author_email="qingyuepei@foxmail.com",
     description="一个用于大语言模型生成JSON数据的Python包",
     long_description=long_description,
     long_description_content_type="text/markdown",
