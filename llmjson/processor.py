@@ -143,7 +143,11 @@ class LLMProcessor:
             
             # 提取JSON数据
             json_data = self._extract_json(response)
-            
+
+            # 为所有实体、状态和关系添加文档来源
+            if json_data is not None:
+                self._add_document_source_to_json_data(json_data, doc_name)
+
             processing_time = time.time() - start_time
             
             if json_data is None:
@@ -1256,3 +1260,31 @@ class LLMProcessor:
             chunks.append(current_chunk.strip())
         
         return chunks
+
+    def _add_document_source_to_json_data(self, json_data: Dict[str, Any], doc_name: str) -> None:
+        """为JSON数据中的所有实体、状态和关系添加文档来源
+
+        Args:
+            json_data: LLM返回的JSON数据
+            doc_name: 文档名称
+        """
+        if not isinstance(json_data, dict):
+            return
+
+        # 为基础实体添加文档来源
+        if "基础实体" in json_data and isinstance(json_data["基础实体"], list):
+            for entity in json_data["基础实体"]:
+                if isinstance(entity, dict):
+                    entity["文档来源"] = doc_name
+
+        # 为状态实体添加文档来源
+        if "状态实体" in json_data and isinstance(json_data["状态实体"], list):
+            for state in json_data["状态实体"]:
+                if isinstance(state, dict):
+                    state["文档来源"] = doc_name
+
+        # 为状态关系添加文档来源
+        if "状态关系" in json_data and isinstance(json_data["状态关系"], list):
+            for relation in json_data["状态关系"]:
+                if isinstance(relation, dict):
+                    relation["文档来源"] = doc_name
