@@ -1,37 +1,23 @@
-# 包含README和许可证文件
+# 包含核心文件
 include README.md
 include LICENSE
 include requirements.txt
-include pyproject.toml
+include .env.example
 
-# 包含配置文件
-include *.json
-include *.yaml
-include *.yml
+# 包含配置和模板
+recursive-include configs *.json
+recursive-include templates *.yaml
 
-# 包含文档文件
-recursive-include docs *
-recursive-include llm_json_generator *.md
-recursive-include llm_json_generator *.txt
-recursive-include llm_json_generator *.json
+# 包含示例
+include example.py
+include simple_cli.py
 
-# 排除不需要的文件
-exclude *.pyc
-exclude *.pyo
-exclude *~
-exclude .DS_Store
-recursive-exclude * __pycache__
-recursive-exclude * *.py[co]
-recursive-exclude * *~
-recursive-exclude * .DS_Store
-
-# 排除测试文件
-exclude tests/*
-recursive-exclude tests *
-
-# 排除开发文件
-exclude .gitignore
-exclude .pytest_cache
-exclude .mypy_cache
-exclude .coverage
-exclude tox.ini
+# 排除不必要的文件
+global-exclude *.pyc
+global-exclude *.pyo
+global-exclude *~
+global-exclude __pycache__
+global-exclude .git*
+global-exclude test_*
+global-exclude *_test.py
+global-exclude *.log

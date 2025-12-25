@@ -5,9 +5,7 @@
 """
 
 from .universal import UniversalProcessor
-from .legacy import LegacyProcessorAdapter
 
 __all__ = [
-    'UniversalProcessor',
-    'LegacyProcessorAdapter'
+    'UniversalProcessor'
 ]

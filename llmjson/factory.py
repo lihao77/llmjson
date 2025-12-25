@@ -11,10 +11,8 @@ from pathlib import Path
 
 from .processors.universal import UniversalProcessor
 from .templates.base import ConfigurableTemplate
-from .templates.legacy import LegacyFloodTemplate
-from .validators.universal import UniversalValidator, LegacyValidatorAdapter
+from .validators.universal import UniversalValidator
 from .validators.rules.common import EntityDeduplicationRule, RelationValidationRule, TimeFormatValidationRule
-from .validators.rules.flood_disaster import FloodDisasterValidationRules
 
 
 class ProcessorFactory:
@@ -65,17 +63,17 @@ class ProcessorFactory:
         )
     
     @staticmethod
-    def create_flood_disaster_processor(**kwargs) -> UniversalProcessor:
-        """创建洪涝灾害专用处理器（快捷方法）
+    def create_universal_processor(**kwargs) -> UniversalProcessor:
+        """创建通用处理器（快捷方法）
         
         Args:
             **kwargs: 处理器参数
             
         Returns:
-            洪涝灾害处理器实例
+            通用处理器实例
         """
-        template = LegacyFloodTemplate()
-        validator = LegacyValidatorAdapter()
+        template = ConfigurableTemplate()
+        validator = UniversalValidator({}, [])
         
         return UniversalProcessor(
             template=template,
@@ -93,13 +91,9 @@ class ProcessorFactory:
                 raise FileNotFoundError(f"模板配置文件不存在: {config_path}")
             return ConfigurableTemplate(config_path)
         
-        elif template_config.get('type') == 'flood_disaster':
-            # 洪涝灾害模板
-            return LegacyFloodTemplate()
-        
         else:
-            # 默认使用洪涝灾害模板
-            return LegacyFloodTemplate()
+            # 默认使用通用模板
+            return ConfigurableTemplate()
     
     @staticmethod
     def _create_validator(validator_config: Dict[str, Any], template) -> Optional[UniversalValidator]:
@@ -107,11 +101,7 @@ class ProcessorFactory:
         if not validator_config:
             return None
         
-        if validator_config.get('type') == 'legacy':
-            # 使用原有验证器
-            return LegacyValidatorAdapter()
-        
-        elif validator_config.get('type') == 'universal':
+        if validator_config.get('type') == 'universal':
             # 通用验证器
             schema = template.schema if hasattr(template, 'schema') else {}
             custom_rules = ProcessorFactory._create_validation_rules(
@@ -120,12 +110,9 @@ class ProcessorFactory:
             return UniversalValidator(schema, custom_rules)
         
         else:
-            # 默认根据模板类型选择验证器
-            if isinstance(template, LegacyFloodTemplate):
-                return LegacyValidatorAdapter()
-            else:
-                schema = template.schema if hasattr(template, 'schema') else {}
-                return UniversalValidator(schema, [])
+            # 默认使用通用验证器
+            schema = template.schema if hasattr(template, 'schema') else {}
+            return UniversalValidator(schema, [])
     
     @staticmethod
     def _create_validation_rules(rules_config: List[Dict[str, Any]]) -> List:
@@ -144,10 +131,6 @@ class ProcessorFactory:
             
             elif rule_type == 'time_format_validation':
                 rules.append(TimeFormatValidationRule(**rule_params))
-            
-            elif rule_type == 'flood_disaster_validation':
-                # 添加所有洪涝灾害验证规则
-                rules.extend(FloodDisasterValidationRules.get_all_rules())
             
             # 可以继续添加其他规则类型
         
@@ -176,12 +159,12 @@ class TemplateFactory:
     """模板工厂"""
     
     @staticmethod
-    def create_knowledge_graph_template(output_path: str):
+    def create_universal_template(output_path: str):
         """创建通用知识图谱模板配置文件"""
         template_config = {
             "name": "通用知识图谱提取",
             "description": "从文本中提取实体和关系的通用模板",
-            "version": "1.0",
+            "version": "2.0",
             
             "output_schema": {
                 "type": "object",
@@ -256,24 +239,6 @@ class TemplateFactory:
         }
         
         # 保存配置文件
-        import yaml
-        with open(output_path, 'w', encoding='utf-8') as f:
-            yaml.dump(template_config, f, allow_unicode=True, indent=2)
-        
-        return output_path
-    
-    @staticmethod
-    def create_flood_disaster_template(output_path: str):
-        """创建洪涝灾害模板配置文件（从原有模板转换）"""
-        # 这里可以将原有的洪涝灾害模板转换为配置文件格式
-        # 目前返回一个基本的配置
-        template_config = {
-            "name": "洪涝灾害知识图谱提取",
-            "description": "专门用于洪涝灾害相关信息的提取",
-            "version": "2.0",
-            # ... 这里可以添加完整的洪涝灾害配置
-        }
-        
         import yaml
         with open(output_path, 'w', encoding='utf-8') as f:
             yaml.dump(template_config, f, allow_unicode=True, indent=2)

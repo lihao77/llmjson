@@ -5,10 +5,8 @@
 """
 
 from .base import BaseTemplate, ConfigurableTemplate
-from .legacy import LegacyFloodTemplate
 
 __all__ = [
     'BaseTemplate',
-    'ConfigurableTemplate', 
-    'LegacyFloodTemplate'
+    'ConfigurableTemplate'
 ]

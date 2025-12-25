@@ -98,6 +98,42 @@ class LogConfig:
         
         with open(file_path, 'w', encoding='utf-8') as f:
             json.dump({'logging': self.to_dict()}, f, indent=2, ensure_ascii=False)
+
+
+class EnvironmentLogConfig:
+    """环境相关的日志配置"""
+    
+    def __init__(self, environment: str = "development"):
+        self.environment = environment.lower()
+    
+    def get_config(self) -> LogConfig:
+        """根据环境获取配置"""
+        config = LogConfig()
+        
+        if self.environment == "development":
+            config.log_level = "DEBUG"
+            config.enable_console = True
+            config.enable_file = True
+            config.enable_json = False
+            
+        elif self.environment == "testing":
+            config.log_level = "INFO"
+            config.enable_console = False
+            config.enable_file = True
+            config.enable_json = True
+            
+        elif self.environment == "production":
+            config.log_level = "WARNING"
+            config.enable_console = False
+            config.enable_file = True
+            config.enable_json = True
+            config.auto_cleanup = True
+            
+        else:
+            # 默认配置
+            config.log_level = "INFO"
+        
+        return config
     
     def validate(self) -> bool:
         """验证配置的有效性"""

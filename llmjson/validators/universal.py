@@ -48,33 +48,3 @@ class UniversalValidator(BaseValidator):
                 self.validation_report["errors"].append(f"Custom rule '{rule.name}' failed: {str(e)}")
         
         return validated_data, self.validation_report
-
-
-class LegacyValidatorAdapter(BaseValidator):
-    """原有验证器的适配器，保持兼容性"""
-    
-    def __init__(self):
-        super().__init__()
-        # 导入原有的验证器
-        from ..validator import DataValidator
-        self._legacy_validator = DataValidator()
-    
-    def validate_data(self, data: Dict[str, Any]) -> Tuple[Dict[str, Any], Dict[str, Any]]:
-        """使用原有验证器进行验证"""
-        validated_data, legacy_report = self._legacy_validator.validate_data(data)
-        
-        # 转换报告格式
-        self.validation_report = self._convert_legacy_report(legacy_report)
-        
-        return validated_data, self.validation_report
-    
-    def _convert_legacy_report(self, legacy_report: Dict[str, Any]) -> Dict[str, Any]:
-        """将原有报告格式转换为新格式"""
-        return {
-            "errors": legacy_report.get("errors_deleted", []),
-            "warnings": legacy_report.get("warnings_unmodified", []),
-            "corrections": legacy_report.get("warnings_modified", []),
-            "schema_validation": len(legacy_report.get("errors_deleted", [])) == 0,
-            "custom_validation": True,
-            "legacy_report": legacy_report
-        }

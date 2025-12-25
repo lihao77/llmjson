@@ -4,9 +4,9 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "llmjson"
-version = "1.0.0"
+version = "2.0.0"
 authors = [
-    {name = "Knowledge Graph Team", email = "team@example.com"},
+    {name = "lihao77", email = "qingyuepei@foxmail.com"},
 ]
 description = "一个用于大语言模型生成JSON数据的Python包"
 readme = "README.md"

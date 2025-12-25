@@ -41,16 +41,103 @@ class BaseTemplate(ABC):
 class ConfigurableTemplate(BaseTemplate):
     """可配置的通用模板"""
     
-    def __init__(self, template_config_path: str):
-        self.template_config_path = Path(template_config_path)
-        
-        with open(template_config_path, 'r', encoding='utf-8') as f:
-            if template_config_path.endswith(('.yaml', '.yml')):
-                self.template_config = yaml.safe_load(f)
-            else:
-                self.template_config = json.load(f)
+    def __init__(self, template_config_path: Optional[str] = None):
+        if template_config_path is None:
+            # 使用默认的通用模板配置
+            self.template_config = self._get_default_config()
+            self.template_config_path = None
+        else:
+            self.template_config_path = Path(template_config_path)
+            
+            with open(template_config_path, 'r', encoding='utf-8') as f:
+                if template_config_path.endswith(('.yaml', '.yml')):
+                    self.template_config = yaml.safe_load(f)
+                else:
+                    self.template_config = json.load(f)
         
         super().__init__(self.template_config.get('config', {}))
+    
+    def _get_default_config(self) -> Dict[str, Any]:
+        """获取默认的通用模板配置"""
+        return {
+            "name": "默认通用信息提取模板",
+            "description": "基本的实体和关系提取模板",
+            "version": "2.0",
+            
+            "output_schema": {
+                "type": "object",
+                "properties": {
+                    "entities": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "type": {"type": "string"},
+                                "name": {"type": "string"},
+                                "id": {"type": "string"}
+                            },
+                            "required": ["type", "name", "id"]
+                        }
+                    },
+                    "relations": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "source": {"type": "string"},
+                                "relation": {"type": "string"},
+                                "target": {"type": "string"}
+                            },
+                            "required": ["source", "relation", "target"]
+                        }
+                    }
+                },
+                "required": ["entities", "relations"]
+            },
+            
+            "output_example": {
+                "entities": [
+                    {"type": "person", "name": "张三", "id": "P-张三-001"}
+                ],
+                "relations": [
+                    {"source": "P-张三-001", "relation": "工作于", "target": "O-公司-001"}
+                ]
+            },
+            
+            "entity_types": [
+                {"name": "person", "description": "人物实体"},
+                {"name": "organization", "description": "组织机构"},
+                {"name": "location", "description": "地理位置"}
+            ],
+            
+            "relation_types": [
+                {"name": "工作于", "description": "工作关系"},
+                {"name": "位于", "description": "位置关系"}
+            ],
+            
+            "system_prompt": """你是一个专业的信息提取引擎。请从给定文本中准确提取实体和关系信息。
+
+## 实体类型定义
+{entity_types}
+
+## 关系类型定义
+{relation_types}
+
+## 输出格式要求
+请严格按照以下JSON格式输出：
+{output_format_example}
+
+## 提取原则
+1. 只提取文本中明确提到的信息
+2. 确保实体ID的唯一性和一致性
+3. 关系必须基于文本中的明确表述
+4. 保持输出格式的严格一致性""",
+            
+            "user_prompt": """请从以下文本中提取实体和关系信息：
+
+文档：{doc_name}
+内容：{chunk}"""
+        }
     
     def load_schema(self) -> Dict[str, Any]:
         return self.template_config.get('output_schema', {})

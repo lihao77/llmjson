@@ -5,10 +5,8 @@
 """
 
 from .common import EntityDeduplicationRule, RelationValidationRule
-from .flood_disaster import FloodDisasterValidationRules
 
 __all__ = [
     'EntityDeduplicationRule',
-    'RelationValidationRule', 
-    'FloodDisasterValidationRules'
+    'RelationValidationRule'
 ]
