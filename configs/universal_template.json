@@ -1,0 +1,17 @@
+{
+  "template": {
+    "config_path": "templates/universal.yaml"
+  },
+  "validator": {
+  },
+  "processor": {
+    "api_key": "${OPENAI_API_KEY}",
+    "base_url": "${OPENAI_BASE_URL}",
+    "model": "${OPENAI_MODEL}",
+    "temperature": 0.1,
+    "max_tokens": 4000,
+    "timeout": 60,
+    "max_retries": 3,
+    "retry_delay": 1.0
+  }
+}

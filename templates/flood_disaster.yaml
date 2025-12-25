@@ -1,0 +1,145 @@
+name: "洪涝灾害知识图谱提取"
+description: "专门用于洪涝灾害相关信息的提取"
+version: "2.0"
+
+# 输出数据结构定义
+output_schema:
+  type: "object"
+  properties:
+    基础实体:
+      type: "array"
+      items:
+        type: "object"
+        properties:
+          类型: {type: "string", enum: ["事件", "地点", "设施"]}
+          名称: {type: "string"}
+          唯一ID: {type: "string"}
+          地理描述: {type: "string"}
+        required: ["类型", "名称", "唯一ID"]
+    状态实体:
+      type: "array"
+      items:
+        type: "object"
+        properties:
+          类型: {type: "string", enum: ["独立状态", "联合状态"]}
+          关联实体ID列表: {type: "array", items: {type: "string"}}
+          状态ID: {type: "string"}
+          时间: {type: "string", pattern: "^[0-9]{4}-[0-9]{2}-[0-9]{2}至[0-9]{4}-[0-9]{2}-[0-9]{2}$"}
+          状态描述: {type: "object"}
+        required: ["类型", "关联实体ID列表", "状态ID", "时间", "状态描述"]
+    状态关系:
+      type: "array"
+      items:
+        type: "object"
+        properties:
+          主体状态ID: {type: "string"}
+          关系: {type: "string", enum: ["触发", "影响", "调控", "导致"]}
+          客体状态ID: {type: "string"}
+          依据: {type: "string"}
+        required: ["主体状态ID", "关系", "客体状态ID", "依据"]
+  required: ["基础实体", "状态实体", "状态关系"]
+
+# 用户定义的输出示例（完整示例）
+output_example:
+  基础实体:
+    - 类型: "事件"
+      名称: "持续性强降雨过程"
+      唯一ID: "E-420000-20230615-HEAVY_RAIN"
+      地理描述: "长江流域"
+    - 类型: "地点"
+      名称: "湖北省武汉市"
+      唯一ID: "L-420100"
+      地理描述: "湖北省武汉市"
+    - 类型: "设施"
+      名称: "三峡大坝"
+      唯一ID: "F-420000-三峡大坝"
+      地理描述: "湖北省"
+  状态实体:
+    - 类型: "独立状态"
+      关联实体ID列表: ["E-420000-20230615-HEAVY_RAIN"]
+      状态ID: "E-420000-20230615-HEAVY_RAIN-20230615_20230616"
+      时间: "2023-06-15至2023-06-16"
+      状态描述:
+        事件类型": "连续性强降雨"
+    - 类型: "独立状态"
+      关联实体ID列表: ["L-420100"]
+      状态ID: "LS-L-420100-20230616_20230616"
+      时间: "2023-06-16至2023-06-16"
+      状态描述:
+        受灾人口: "125.6万人"
+        直接经济损失: "15.8亿元"
+  状态关系:
+    - 主体状态ID: "E-420000-20230615-HEAVY_RAIN-20230615_20230616"
+      关系: "导致"
+      客体状态ID: "LS-L-420100-20230620_20230705"
+      依据: "持续性强降雨过程导致湖北省武汉市发生洪涝灾害"
+
+# 实体类型定义
+entity_types:
+  - name: "事件"
+    description: "直接导致或由洪涝灾害引发的具体自然或衍生现象"
+    id_pattern: "E-<行政区划码>-<日期YYYYMMDD>-<事件类型>"
+    examples: ["2023年长江流域暴雨", "某河段决堤事件"]
+  - name: "地点"
+    description: "自然地理实体（河流、湖泊等）或行政区域（省、市、区、乡镇）"
+    id_pattern: "L-<行政区划码>[>子区域] 或 L-<实体类型>-<名称>[>区段]"
+    examples: ["长江", "鄱阳湖", "湖北省武汉市"]
+  - name: "设施"
+    description: "参与防洪、水资源管理或救灾的、具有具体明确名称的人工建造结构"
+    id_pattern: "F-<行政区划码>-<设施名称>"
+    examples: ["三峡大坝", "龙潭水库排水泵站", "湘江水文站"]
+
+# 关系类型定义
+relation_types:
+  - name: "触发"
+    description: "一个状态触发另一个状态的发生"
+  - name: "影响"
+    description: "一个状态对另一个状态产生影响"
+  - name: "调控"
+    description: "通过人为操作调控某种状态"
+  - name: "导致"
+    description: "直接的因果关系"
+
+# 提示模板
+system_prompt: |
+  你是一个高度专业化的信息抽取引擎，专为洪涝灾害领域设计。你的核心任务是精确、无遗漏地从给定文本中抽取出符合下列严格定义的实体、状态和关系。
+
+  ## 实体定义
+  
+  {entity_types}
+
+  ## 状态定义
+  
+  - 独立状态：描述单一基础实体在特定时空下的状况
+  - 联合状态：描述多个基础实体不可分割的共享状态
+
+  ## 关系定义
+  
+  {relation_types}
+
+  ## 输出格式要求
+  
+  请严格按照以下JSON格式输出，字段名称必须完全一致：
+
+  {output_format_example}
+
+  ## 核心原则
+  
+  1. 忠于原文：仅能提取文本中明确陈述或可直接推断的信息
+  2. 确定性优先：如果对某项信息存在模糊性，必须放弃提取
+  3. 完整性扫描：确保所有符合定义的实体、状态及关系都被提取
+  4. 格式严格：必须严格按照上述JSON格式输出，字段名称不能更改
+
+user_prompt: |
+  请严格遵循以上所有原则、定义、流程和格式，处理以下文本。返回唯一的、格式正确的JSON输出，不要包含任何解释性文字。
+
+  来源文档: 《{doc_name}》
+  待处理文本: {chunk}
+
+# 配置参数
+config:
+  max_entities_per_chunk: 100
+  max_states_per_chunk: 200
+  max_relations_per_chunk: 150
+  require_evidence: true
+  strict_id_format: true

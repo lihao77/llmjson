@@ -1,0 +1,85 @@
+name: "通用信息提取模板"
+description: "可配置的通用信息提取模板，支持自定义实体类型和关系"
+version: "2.0"
+
+# 输出数据结构定义
+output_schema:
+  type: "object"
+  properties:
+    entities:
+      type: "array"
+      items:
+        type: "object"
+        properties:
+          type: {type: "string"}
+          name: {type: "string"}
+          id: {type: "string"}
+        required: ["type", "name", "id"]
+    relations:
+      type: "array"
+      items:
+        type: "object"
+        properties:
+          source: {type: "string"}
+          relation: {type: "string"}
+          target: {type: "string"}
+        required: ["source", "relation", "target"]
+  required: ["entities", "relations"]
+
+# 用户定义的输出示例
+output_example:
+  entities:
+    - type: "person"
+      name: "张三"
+      id: "P-张三-001"
+    - type: "organization"
+      name: "苹果公司"
+      id: "O-苹果公司-001"
+  relations:
+    - source: "P-张三-001"
+      relation: "工作于"
+      target: "O-苹果公司-001"
+
+# 实体类型定义（可根据需要修改）
+entity_types:
+  - name: "person"
+    description: "人物实体"
+  - name: "organization"
+    description: "组织机构"
+  - name: "location"
+    description: "地理位置"
+
+# 关系类型定义（可根据需要修改）
+relation_types:
+  - name: "工作于"
+    description: "人物在某个组织工作"
+  - name: "位于"
+    description: "地理位置关系"
+  - name: "拥有"
+    description: "拥有关系"
+
+# 提示模板
+system_prompt: |
+  你是一个专业的信息提取引擎。请从给定文本中准确提取实体和关系信息。
+
+  ## 实体类型定义
+  {entity_types}
+
+  ## 关系类型定义
+  {relation_types}
+
+  ## 输出格式要求
+  请严格按照以下JSON格式输出：
+  {output_format_example}
+
+  ## 提取原则
+  1. 只提取文本中明确提到的信息
+  2. 确保实体ID的唯一性和一致性
+  3. 关系必须基于文本中的明确表述
+  4. 保持输出格式的严格一致性
+
+user_prompt: |
+  请从以下文本中提取实体和关系信息：
+
+  文档：{doc_name}
+  内容：{chunk}
