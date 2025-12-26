@@ -70,7 +70,7 @@ system_prompt: |
 
   ## 输出格式要求
   请严格按照以下JSON格式输出：
-  {output_format_example}
+  {output_example}
 
   ## 提取原则
   1. 只提取文本中明确提到的信息

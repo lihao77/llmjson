@@ -161,45 +161,40 @@ class ConfigurableTemplate(BaseTemplate):
         return messages
     
     def _prepare_template_variables(self, **kwargs) -> Dict[str, str]:
-        """准备模板变量 - 简化版本"""
+        """准备模板变量"""
         variables = kwargs.copy()
         
-        # 1. 处理基本配置信息
-        for key in ['name', 'description', 'version']:
-            if key in self.template_config and key not in variables:
-                variables[key] = self.template_config[key]
-        
-        # 2. 收集所有需要处理的变量名（从所有模板字符串中）
-        all_template_strings = []
-        if 'system_prompt' in self.template_config:
-            all_template_strings.append(self.template_config['system_prompt'])
-        if 'user_prompt' in self.template_config:
-            all_template_strings.append(self.template_config['user_prompt'])
-        
-        # 添加自定义变量的模板字符串
-        if 'template_variables' in self.template_config:
-            for var_config in self.template_config['template_variables'].values():
-                if var_config.get('type') == 'template':
-                    all_template_strings.append(var_config.get('template', ''))
-        
-        # 3. 自动处理所有配置中的数组类型数据
+        # 1. 自动映射配置项到变量
         for key, value in self.template_config.items():
-            if isinstance(value, list) and key not in variables:
-                # 检查这个key是否在任何模板中被使用
-                key_pattern = f'{{{key}}}'
-                if any(key_pattern in template_str for template_str in all_template_strings):
-                    variables[key] = self._generate_types_description(value)
-        
-        # 4. 自动处理schema相关变量
-        if 'output_schema' in self.template_config:
-            variables['output_format_example'] = self._generate_format_example()
-            variables['output_schema_json'] = json.dumps(
-                self.template_config['output_schema'], 
-                ensure_ascii=False, 
-                indent=2
-            )
-        
-        # 5. 处理模板配置中定义的自定义变量生成器
+            # 跳过特殊配置项
+            if key in ['template_variables', 'config']: 
+                continue
+            
+            # 如果变量已存在（通过kwargs传入），则跳过
+            if key in variables:
+                continue
+
+            # 根据类型处理值
+            if isinstance(value, (str, int, float, bool)):
+                variables[key] = str(value)
+            
+            elif key in ['output_schema', 'output_example']:
+                # Schema和Example强制转为JSON字符串
+                variables[key] = json.dumps(value, ensure_ascii=False, indent=2)
+            
+            elif isinstance(value, list):
+                # 列表通常是类型定义，使用列表描述生成器
+                variables[key] = self._generate_types_description(value)
+            
+            elif isinstance(value, dict):
+                # 其他字典转为JSON
+                variables[key] = json.dumps(value, ensure_ascii=False, indent=2)
+
+        # 2. 如果没有提供output_example但有schema，尝试自动生成
+        if 'output_example' not in variables and 'output_schema' in self.template_config:
+            variables['output_example'] = self._generate_format_example()
+
+        # 3. 处理自定义变量 (template_variables)
         if 'template_variables' in self.template_config:
             custom_vars = self.template_config['template_variables']
             for var_name, var_config in custom_vars.items():
